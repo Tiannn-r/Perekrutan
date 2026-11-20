@@ -252,6 +252,111 @@
 </div>
 
 <!-- ========================================== -->
+<!-- MODAL: DETAIL KANDIDAT & WAWANCARA (HR ACTION) -->
+<!-- ========================================== -->
+<div id="modal-candidate-detail" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
+        <!-- Header -->
+        <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <img src="{{ asset('images/nkri-icon.png') }}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain" alt="NKRI">
+                <h3 class="font-bold text-xs tracking-wide">Detail Wawancara Kandidat</h3>
+            </div>
+            <button onclick="closeModal('modal-candidate-detail')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
+        </div>
+
+        <div class="p-5 space-y-4 text-xs">
+            <!-- Candidate Profile Info -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm" id="detail-cand-name">-</h4>
+                    <p class="text-slate-500 text-xs mt-0.5" id="detail-cand-role">-</p>
+                    <div class="flex items-center gap-3 text-[11px] text-slate-400 mt-1">
+                        <span id="detail-cand-email">-</span>
+                        <span>•</span>
+                        <span id="detail-cand-phone">-</span>
+                    </div>
+                </div>
+                <div id="detail-status-badge">
+                    <!-- Status Badge -->
+                </div>
+            </div>
+
+            <!-- Schedule & Interviewer -->
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-0.5">
+                    <span class="text-slate-400 text-[11px] block">Waktu Wawancara</span>
+                    <span class="font-bold text-slate-900" id="detail-schedule-time">-</span>
+                    <span class="text-[11px] text-slate-500 block" id="detail-schedule-duration">-</span>
+                </div>
+                <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-0.5">
+                    <span class="text-slate-400 text-[11px] block">Pewawancara</span>
+                    <span class="font-bold text-slate-900" id="detail-interviewer">-</span>
+                    <span class="text-[11px] text-slate-500 block" id="detail-tahap">Tahap 1</span>
+                </div>
+            </div>
+
+            <!-- Kategori Section (Online / Offline) -->
+            <div id="detail-section-online" class="hidden bg-red-50/60 border border-red-200 rounded-xl p-4 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-600 text-white">Online</span>
+                        <span class="font-bold text-red-950 text-xs">Google Meet / Virtual Room</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">Tautan Aktif</span>
+                </div>
+                <div class="p-2.5 bg-white rounded-lg border border-red-100 font-mono text-[11px] text-red-700 select-all break-all" id="detail-meeting-link">
+                    -
+                </div>
+                <div class="flex gap-2 pt-1">
+                    <a id="btn-detail-join-meeting" href="#" target="_blank" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs text-center transition shadow-xs">
+                        Gabung Rapat
+                    </a>
+                    <button onclick="copyMeetingLink()" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs transition">
+                        Salin Link
+                    </button>
+                </div>
+            </div>
+
+            <div id="detail-section-offline" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-1.5">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-white">Offline</span>
+                    <span class="font-bold text-slate-900 text-xs">Tatap Muka di Kantor</span>
+                </div>
+                <span class="text-slate-400 text-[11px] block font-semibold">Alamat & Ruangan:</span>
+                <p class="text-xs text-slate-700 leading-relaxed font-medium" id="detail-location-text">-</p>
+                <p class="text-[11px] text-slate-400 pt-1">Kandidat dan pewawancara hadir langsung di lokasi di atas.</p>
+            </div>
+
+            <!-- Portal Token Link Section -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <div class="flex justify-between items-center text-[11px]">
+                    <span class="text-slate-500 font-medium">Tautan Portal Respon Kandidat:</span>
+                    <span class="text-slate-400 font-mono" id="detail-token-used-status">Terkonfirmasi</span>
+                </div>
+                <div class="p-2 bg-white rounded-lg border border-slate-200 font-mono text-[10px] text-slate-600 select-all break-all" id="detail-portal-link-url">
+                    -
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="copyDetailPortalLink()" class="flex-1 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition">
+                        Salin Tautan Portal
+                    </button>
+                    <a id="btn-detail-open-portal" href="#" target="_blank" class="py-1.5 px-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-lg text-xs transition">
+                        Buka Portal
+                    </a>
+                </div>
+            </div>
+
+            <div class="pt-1 flex justify-end">
+                <button onclick="closeModal('modal-candidate-detail')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
 <!-- MODAL: LINK PORTAL KANDIDAT & DETAIL -->
 <!-- ========================================== -->
 <div id="modal-portal-link" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -377,13 +482,16 @@
             if (c.status === 'New Application') {
                 actionBtn = `<button onclick="openScheduleModal(${c.id}, '${escapeHtml(c.nama)}', '${escapeHtml(c.posisi)}')" class="px-3.5 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs">Jadwalkan</button>`;
             } else if (c.status === 'Reschedule Requested') {
-                actionBtn = `<button onclick="openRescheduleModal(${latestInterview?.id}, '${escapeHtml(c.nama)}', '${escapeHtml(c.posisi)}', '${escapeHtml(reschedReq?.alasan || '-')}', '${escapeHtml(reschedReq?.saran_waktu || '-')}')" class="px-3.5 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs">Tinjau</button>`;
-            } else if (token) {
                 actionBtn = `
-                    <div class="flex items-center justify-end gap-1">
-                        <button onclick="openPortalLinkModal('${token}')" class="px-2.5 py-1 bg-white hover:bg-red-50 hover:text-red-700 hover:border-red-200 border border-slate-200 text-slate-700 font-semibold rounded-lg text-xs transition">Link Portal</button>
+                    <div class="flex items-center justify-end gap-1.5">
+                        <button onclick="openRescheduleModal(${latestInterview?.id}, '${escapeHtml(c.nama)}', '${escapeHtml(c.posisi)}', '${escapeHtml(reschedReq?.alasan || '-')}', '${escapeHtml(reschedReq?.saran_waktu || '-')}')" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs">Tinjau</button>
+                        <button onclick="openCandidateDetailModal(${c.id})" class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs transition shadow-2xs">Detail</button>
                     </div>
                 `;
+            } else if (c.status === 'Confirmed') {
+                actionBtn = `<button onclick="openCandidateDetailModal(${c.id})" class="px-3.5 py-1 bg-white hover:bg-red-50 hover:text-red-700 hover:border-red-200 border border-slate-200 text-slate-800 font-bold rounded-lg text-xs transition shadow-2xs">Detail</button>`;
+            } else if (latestInterview) {
+                actionBtn = `<button onclick="openCandidateDetailModal(${c.id})" class="px-3.5 py-1 bg-white hover:bg-red-50 hover:text-red-700 hover:border-red-200 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs transition shadow-2xs">Detail</button>`;
             } else {
                 actionBtn = `<span class="text-slate-300">-</span>`;
             }
@@ -573,6 +681,89 @@
             submitBtn.disabled = false;
             submitBtn.innerText = 'Konfirmasi Jadwal Baru';
         }
+    }
+
+    function openCandidateDetailModal(candId) {
+        const c = candidatesData.find(item => item.id == candId);
+        if (!c) return;
+
+        const interview = c.latest_interview;
+        const token = interview?.token?.token;
+
+        document.getElementById('detail-cand-name').innerText = c.nama;
+        document.getElementById('detail-cand-role').innerText = c.posisi;
+        document.getElementById('detail-cand-email').innerText = c.email;
+        document.getElementById('detail-cand-phone').innerText = c.telepon || '-';
+
+        // Status badge
+        let statusBadgeHtml = '';
+        if (c.status === 'Confirmed') {
+            statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Terkonfirmasi</span>';
+        } else if (c.status === 'Invited') {
+            statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">Menunggu</span>';
+        } else if (c.status === 'Reschedule Requested') {
+            statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300">Reschedule (1x)</span>';
+        } else if (c.status === 'Declined') {
+            statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">Menolak</span>';
+        } else {
+            statusBadgeHtml = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">${c.status}</span>`;
+        }
+        document.getElementById('detail-status-badge').innerHTML = statusBadgeHtml;
+
+        // Schedule & Kategori (Online / Offline)
+        if (interview) {
+            const dateObj = new Date(interview.tanggal_waktu);
+            const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
+            document.getElementById('detail-schedule-time').innerText = formattedDate;
+            document.getElementById('detail-schedule-duration').innerText = `Durasi: ${interview.durasi_menit || 45} Menit`;
+            document.getElementById('detail-interviewer').innerText = interview.interviewer || 'Tim HR NKRI';
+            document.getElementById('detail-tahap').innerText = interview.tahap || 'Tahap 1';
+
+            const onlineSection = document.getElementById('detail-section-online');
+            const offlineSection = document.getElementById('detail-section-offline');
+
+            if (interview.kategori === 'online') {
+                onlineSection.classList.remove('hidden');
+                offlineSection.classList.add('hidden');
+
+                const meetingUrl = interview.link_meeting || 'https://meet.google.com/nkri-interview';
+                document.getElementById('detail-meeting-link').innerText = meetingUrl;
+                document.getElementById('btn-detail-join-meeting').href = meetingUrl;
+            } else {
+                onlineSection.classList.add('hidden');
+                offlineSection.classList.remove('hidden');
+
+                document.getElementById('detail-location-text').innerText = interview.lokasi || 'Gedung Pusat NKRI, Lantai 3 Ruang Wawancara, Jakarta';
+            }
+        }
+
+        // Token URL & portal access
+        if (token) {
+            const fullPortalUrl = `${window.location.origin}/portal/${token}`;
+            document.getElementById('detail-portal-link-url').innerText = fullPortalUrl;
+            document.getElementById('btn-detail-open-portal').href = fullPortalUrl;
+            document.getElementById('detail-token-used-status').innerText = interview?.token?.sudah_dipakai ? 'Token Terpakai (Terkunci)' : 'Token Aktif';
+        } else {
+            document.getElementById('detail-portal-link-url').innerText = 'Belum dibuat token';
+            document.getElementById('btn-detail-open-portal').href = '#';
+            document.getElementById('detail-token-used-status').innerText = '-';
+        }
+
+        document.getElementById('modal-candidate-detail').classList.remove('hidden');
+    }
+
+    function copyMeetingLink() {
+        const link = document.getElementById('detail-meeting-link').innerText;
+        navigator.clipboard.writeText(link).then(() => {
+            showToast('Tautan Google Meet berhasil disalin ke clipboard!');
+        });
+    }
+
+    function copyDetailPortalLink() {
+        const link = document.getElementById('detail-portal-link-url').innerText;
+        navigator.clipboard.writeText(link).then(() => {
+            showToast('Tautan portal pelamar berhasil disalin ke clipboard!');
+        });
     }
 
     function openPortalLinkModal(token) {
