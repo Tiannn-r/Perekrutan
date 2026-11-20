@@ -162,10 +162,12 @@
                 </div>
             </div>
 
-            <!-- Input Online: Link Meeting -->
-            <div id="sched-field-online">
-                <label class="block font-semibold text-slate-600 mb-1">Link Meeting (Google Meet / Zoom)</label>
-                <input type="url" id="sched-meeting-link" value="https://meet.google.com/nkri-interview" placeholder="https://meet.google.com/..." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-[11px] text-red-600 focus:outline-none focus:ring-1 focus:ring-red-500">
+            <!-- Info Online: Link Meet Dikirim Saat Hari H -->
+            <div id="sched-field-online" class="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-1">
+                <span class="font-bold text-red-900 text-xs block">💡 Wawancara Online (Google Meet)</span>
+                <p class="text-[11px] text-slate-600 leading-relaxed">
+                    Tautan Google Meet <strong>tidak dimasukkan saat ini</strong>. Link rapat akan dikirimkan oleh HR kepada kandidat melalui email pengingat pada <strong>Hari H</strong> wawancara.
+                </p>
             </div>
 
             <!-- Input Offline: Lokasi Kantor -->
@@ -234,9 +236,11 @@
                 </div>
             </div>
 
-            <div id="resched-field-online">
-                <label class="block font-semibold text-slate-600 mb-1">Link Meeting Baru</label>
-                <input type="url" id="resched-new-link" value="https://meet.google.com/nkri-interview-reschedule" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-[11px] text-red-600 focus:outline-none focus:ring-1 focus:ring-red-500">
+            <div id="resched-field-online" class="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-1">
+                <span class="font-bold text-red-900 text-xs block">💡 Wawancara Online (Google Meet)</span>
+                <p class="text-[11px] text-slate-600 leading-relaxed">
+                    Tautan Google Meet baru <strong>tidak dimasukkan saat ini</strong>. Tautan ruang rapat akan dikirimkan kepada kandidat pada email pengingat <strong>Hari H</strong>.
+                </p>
             </div>
 
             <div id="resched-field-offline" class="hidden">
@@ -258,7 +262,7 @@
 <!-- MODAL: DETAIL KANDIDAT & WAWANCARA (HR ACTION) -->
 <!-- ========================================== -->
 <div id="modal-candidate-detail" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
+    <div class="bg-white rounded-2xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in">
         <!-- Header -->
         <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -303,26 +307,29 @@
                 </div>
             </div>
 
-            <!-- Action Pengingat Wawancara Hari H (Sesuai PRD v1.1 FR-19 s/d FR-24 & Diagram 17.3) -->
-            <div id="detail-reminder-section" class="hidden p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+            <!-- Action Pengingat Wawancara Hari H (Sesuai PRD v1.1 - Desain Panjang / Full Width) -->
+            <div id="detail-reminder-section" class="hidden p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 w-full">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-200">
                     <div>
-                        <span class="font-bold text-slate-900 text-xs">Tugas Pengingat Hari H (HR)</span>
+                        <span class="font-bold text-slate-900 text-xs">Tugas Pengingat Wawancara (HR)</span>
                         <p class="text-[11px] text-slate-500">Kirim satu pesan pengingat resmi pada Hari H kepada kandidat yang sudah terkonfirmasi</p>
                     </div>
                     <span id="detail-reminder-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Belum Dikirim</span>
                 </div>
 
-                <div class="p-3.5 bg-white rounded-xl border border-slate-200 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-slate-800 text-xs" id="detail-reminder-mode-title">Pengingat Hari H (Online)</span>
-                        <span class="text-[10px] text-slate-400 font-mono" id="detail-reminder-sent-time">-</span>
+                <!-- Card Pengingat Panjang Horizontal -->
+                <div class="p-4 bg-white rounded-xl border border-slate-200 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1.5 flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 text-xs" id="detail-reminder-mode-title">Pengingat Hari H (Online)</span>
+                            <span class="text-[10px] text-slate-400 font-mono" id="detail-reminder-sent-time">-</span>
+                        </div>
+                        <p class="text-[11px] text-slate-600 leading-relaxed" id="detail-reminder-mode-desc">
+                            Tautan Google Meet, persiapan teknis (kamera, mic, koneksi, dokumen digital), dresscode, dan ajakan bergabung tepat waktu.
+                        </p>
                     </div>
-                    <p class="text-[11px] text-slate-600 leading-relaxed" id="detail-reminder-mode-desc">
-                        Memuat tautan Google Meet resmi, petunjuk kesiapan teknis (kamera, mic, koneksi, dokumen digital), dresscode, dan ajakan bergabung tepat waktu.
-                    </p>
-                    <div class="pt-1">
-                        <button id="btn-trigger-reminder" onclick="openReminderModalFromDetail()" class="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs flex items-center justify-center gap-1.5">
+                    <div class="sm:self-center shrink-0">
+                        <button id="btn-trigger-reminder" onclick="openReminderModalFromDetail()" class="w-full sm:w-auto py-2.5 px-5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-1.5 whitespace-nowrap">
                             Kirim Pengingat Hari H
                         </button>
                     </div>
@@ -799,8 +806,7 @@
         const kategori = document.querySelector('input[name="schedule-category"]:checked').value;
         const interviewer = document.getElementById('sched-interviewer').value;
         const duration = document.getElementById('sched-duration').value;
-        const meetingLink = document.getElementById('sched-meeting-link').value;
-        const location = document.getElementById('sched-location').value;
+        const location = document.getElementById('sched-location')?.value;
 
         try {
             const res = await fetch('/api/interviews/schedule', {
@@ -816,7 +822,7 @@
                     durasi_menit: duration,
                     kategori: kategori,
                     interviewer: interviewer,
-                    link_meeting: kategori === 'online' ? meetingLink : null,
+                    link_meeting: null, // Sesuai aturan: link meeting online dikirim pas Hari H
                     lokasi: kategori === 'offline' ? location : null,
                 })
             });
@@ -866,8 +872,7 @@
         const date = document.getElementById('resched-new-date').value;
         const time = document.getElementById('resched-new-time').value;
         const kategori = document.querySelector('input[name="resched-category"]:checked').value;
-        const meetingLink = document.getElementById('resched-new-link').value;
-        const location = document.getElementById('resched-new-location').value;
+        const location = document.getElementById('resched-new-location')?.value;
 
         try {
             const res = await fetch(`/api/interviews/${interviewId}/reschedule-resolve`, {
@@ -881,7 +886,7 @@
                     action: 'accept',
                     new_tanggal_waktu: `${date} ${time}:00`,
                     kategori: kategori,
-                    link_meeting: kategori === 'online' ? meetingLink : null,
+                    link_meeting: null, // Sesuai aturan: link meeting baru dikirim pas Hari H
                     lokasi: kategori === 'offline' ? location : null,
                 })
             });

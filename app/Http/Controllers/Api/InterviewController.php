@@ -67,7 +67,7 @@ class InterviewController extends Controller
             'tanggal_waktu' => $scheduleDate,
             'durasi_menit' => $request->input('durasi_menit') ?: $defaultDuration,
             'interviewer' => $request->input('interviewer') ?: $defaultInterviewer,
-            'link_meeting' => $request->input('kategori') === 'online' ? ($request->input('link_meeting') ?: $defaultMeeting) : null,
+            'link_meeting' => null, // Link meeting tidak dimasukkan saat penjadwalan awal, dikirim pas Hari H
             'lokasi' => $request->input('kategori') === 'offline' ? ($request->input('lokasi') ?: $defaultLocation) : null,
             'status' => 'Invited',
             'jumlah_reschedule' => 0,
@@ -156,7 +156,7 @@ class InterviewController extends Controller
         $interview->update([
             'tanggal_waktu' => $newDate,
             'kategori' => $request->input('kategori'),
-            'link_meeting' => $request->input('kategori') === 'online' ? $request->input('link_meeting') : null,
+            'link_meeting' => null, // Link meeting baru tidak dimasukkan sekarang, dikirim pas Hari H
             'lokasi' => $request->input('kategori') === 'offline' ? $request->input('lokasi') : null,
             'status' => 'Invited',
             'batas_respon' => $newDeadline,
@@ -283,20 +283,24 @@ class InterviewController extends Controller
         $mode = $interview->kategori ?: 'online';
         $candidate = $interview->candidate;
 
-        // If meeting link or location is updated in request, persist it to interview
-        if ($request->filled('link_meeting')) {
-            $interview->update(['link_meeting' => $request->input('link_meeting')]);
-        }
-        if ($request->filled('lokasi')) {
-            $interview->update(['lokasi' => $request->input('lokasi')]);
+        // Sesuai aturan BR-08: Link Google Meet dikirim pas Hari H untuk wawancara online
+        if ($mode === 'online') {
+            if ($jenis === 'hari_h') {
+                $meetingLink = $request->input('link_meeting') ?: $interview->link_meeting;
+                if (empty($meetingLink)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Tautan Google Meet wajib terisi sebelum pengingat Hari H dikirim (Aturan BR-08)',
+                    ], 422);
+                }
+                $interview->update(['link_meeting' => $meetingLink]);
+            } elseif ($request->filled('link_meeting')) {
+                $interview->update(['link_meeting' => $request->input('link_meeting')]);
+            }
         }
 
-        // Business Rule BR-08: Wawancara Online: tautan meeting wajib terisi sebelum pengingat Hari H dikirim
-        if ($mode === 'online' && $jenis === 'hari_h' && empty($interview->link_meeting)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Tautan Google Meet wajib terisi sebelum pengingat Hari H dikirim (Aturan BR-08)',
-            ], 422);
+        if ($request->filled('lokasi')) {
+            $interview->update(['lokasi' => $request->input('lokasi')]);
         }
 
         // Business Rule BR-09: Wawancara Offline: lokasi dan jam wajib terisi sebelum pengingat dikirim
