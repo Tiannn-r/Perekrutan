@@ -116,16 +116,10 @@
                 <p class="text-xs text-slate-500 mt-0.5">Edit susunan draf email resmi sistem.</p>
             </div>
 
-            <!-- Template Type Selector Pills -->
-            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs overflow-x-auto">
-                <button type="button" id="tab-tmpl-invitation" onclick="selectAdminTemplate('invitation')" class="flex-1 min-w-[120px] py-2 px-3 rounded-lg bg-red-600 text-white font-bold transition">
-                    Undangan Awal
-                </button>
-                <button type="button" id="tab-tmpl-reminder_online" onclick="selectAdminTemplate('reminder_online')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    Hari H Online
-                </button>
-                <button type="button" id="tab-tmpl-reminder_offline" onclick="selectAdminTemplate('reminder_offline')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    Hari H Offline
+            <!-- Template Type Indicator -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs w-fit">
+                <button type="button" id="tab-tmpl-invitation" class="px-4 py-2 rounded-lg bg-red-600 text-white font-bold transition">
+                    Template Undangan Wawancara (Auto Kirim)
                 </button>
             </div>
 
@@ -410,7 +404,7 @@
     function selectAdminTemplate(key) {
         activeTemplateKey = key;
 
-        ['invitation', 'reminder_online', 'reminder_offline'].forEach(k => {
+        ['invitation'].forEach(k => {
             const btn = document.getElementById(`tab-tmpl-${k}`);
             if (btn) {
                 if (k === key) {
