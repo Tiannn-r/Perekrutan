@@ -20,6 +20,7 @@ Route::get('/candidates', [CandidateController::class, 'index']);
 Route::get('/dashboard/metrics', [CandidateController::class, 'metrics']);
 Route::post('/interviews/schedule', [InterviewController::class, 'schedule']);
 Route::post('/interviews/{id}/reschedule-resolve', [InterviewController::class, 'resolveReschedule']);
+Route::post('/interviews/{id}/reminder', [InterviewController::class, 'sendReminder']);
 
 // 3. Candidate Response Portal Endpoints
 Route::get('/portal/{token}', [PortalController::class, 'show']);

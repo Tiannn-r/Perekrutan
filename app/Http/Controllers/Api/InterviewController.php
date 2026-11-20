@@ -185,4 +185,59 @@ class InterviewController extends Controller
             'new_portal_url' => url("/portal/{$newTokenString}"),
         ]);
     }
+
+    /**
+     * Send interview reminder to candidate who has confirmed attendance.
+     */
+    public function sendReminder(Request $request, $id): JsonResponse
+    {
+        $interview = Interview::with('candidate')->findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'channel' => 'nullable|in:email,whatsapp,both',
+            'catatan_persiapan' => 'nullable|string|max:1000',
+            'ketentuan_pakaian' => 'nullable|string|max:500',
+            'pesan_tambahan' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi pesan pengingat gagal',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $channel = $request->input('channel', 'email');
+
+        // Record notification log
+        NotificationLog::create([
+            'interview_id' => $interview->id,
+            'penerima' => $interview->candidate->email,
+            'tipe' => 'Pengingat Wawancara (' . ucfirst($channel) . ')',
+            'status_kirim' => 'Sent',
+        ]);
+
+        // Record status log
+        StatusLog::create([
+            'candidate_id' => $interview->candidate_id,
+            'interview_id' => $interview->id,
+            'dari_status' => $interview->status,
+            'ke_status' => $interview->status,
+            'aktor' => 'HR',
+            'keterangan' => "Pengingat wawancara {$interview->kategori} dikirim via " . ucfirst($channel),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pengingat wawancara berhasil dikirim ke ' . $interview->candidate->nama,
+            'data' => [
+                'candidate' => $interview->candidate->nama,
+                'email' => $interview->candidate->email,
+                'telepon' => $interview->candidate->telepon,
+                'kategori' => $interview->kategori,
+                'sent_at' => now()->translatedFormat('d F Y, H:i') . ' WIB',
+            ],
+        ]);
+    }
 }

@@ -191,4 +191,53 @@ class RecruitmentBackendTest extends TestCase
 
         $secondAttempt->assertStatus(422);
     }
+
+    public function test_hr_can_send_interview_reminder()
+    {
+        $candidate = Candidate::create([
+            'nama' => 'User E',
+            'email' => 'e@example.com',
+            'telepon' => '081512345678',
+            'posisi' => 'Frontend Engineer',
+            'status' => 'Confirmed',
+        ]);
+
+        $interview = Interview::create([
+            'candidate_id' => $candidate->id,
+            'kategori' => 'online',
+            'tanggal_waktu' => now()->addDays(2),
+            'interviewer' => 'Rian Pratama',
+            'link_meeting' => 'https://meet.google.com/test-room',
+            'status' => 'Confirmed',
+        ]);
+
+        $reminderPayload = [
+            'channel' => 'email',
+            'catatan_persiapan' => 'Pastikan koneksi internet stabil dan siapkan portofolio digital.',
+            'ketentuan_pakaian' => 'Kemeja formal rapi.',
+            'pesan_tambahan' => 'Hadir 5-10 menit sebelum sesi dimulai.',
+        ];
+
+        $response = $this->postJson("/api/interviews/{$interview->id}/reminder", $reminderPayload);
+
+        $response->assertStatus(200)
+                 ->assertJson([
+                     'success' => true,
+                     'data' => [
+                         'candidate' => 'User E',
+                         'email' => 'e@example.com',
+                         'kategori' => 'online',
+                     ],
+                 ]);
+
+        $this->assertDatabaseHas('notification_logs', [
+            'interview_id' => $interview->id,
+            'penerima' => 'e@example.com',
+        ]);
+
+        $this->assertDatabaseHas('status_logs', [
+            'candidate_id' => $candidate->id,
+            'aktor' => 'HR',
+        ]);
+    }
 }

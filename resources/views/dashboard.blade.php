@@ -347,9 +347,155 @@
                 </div>
             </div>
 
+            <!-- Action Pengingat Wawancara (Untuk Kandidat Terkonfirmasi) -->
+            <div id="detail-reminder-section" class="hidden p-4 bg-red-50/60 border border-red-200 rounded-xl space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-900 text-xs">Pengingat Wawancara</span>
+                    <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Terkonfirmasi</span>
+                </div>
+                <p class="text-[11px] text-slate-600 leading-relaxed">
+                    Kandidat telah menyetujui jadwal. Kirimkan pengingat berisi tautan Google Meet (online) atau lokasi kantor (offline), petunjuk persiapan/dokumen yang wajib dibawa, dan ketentuan pakaian resmi.
+                </p>
+                <div class="pt-1">
+                    <button onclick="openReminderModalFromDetail()" class="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-2">
+                        Kirim Pengingat Wawancara
+                    </button>
+                </div>
+            </div>
+
             <div class="pt-1 flex justify-end">
                 <button onclick="closeModal('modal-candidate-detail')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition">
                     Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================== -->
+<!-- MODAL: KIRIM PENGINGAT WAWANCARA (HR ACTION) -->
+<!-- ========================================== -->
+<div id="modal-reminder" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in max-h-[92vh] flex flex-col">
+        <!-- Header -->
+        <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <img src="{{ asset('images/nkri-icon.png') }}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain" alt="Logo">
+                <h3 class="font-bold text-xs tracking-wide">Kirim Pengingat Wawancara</h3>
+            </div>
+            <button onclick="closeModal('modal-reminder')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
+        </div>
+
+        <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
+            <input type="hidden" id="reminder-interview-id">
+
+            <!-- Candidate Summary -->
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center">
+                <div>
+                    <h4 class="font-bold text-slate-900 text-sm" id="reminder-cand-name">-</h4>
+                    <p class="text-slate-500 text-xs" id="reminder-cand-posisi">-</p>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-900 text-white" id="reminder-kategori-badge">Online</span>
+            </div>
+
+            <!-- Schedule info box -->
+            <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-1">
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Jadwal:</span>
+                    <strong class="text-slate-900" id="reminder-schedule-time">-</strong>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Pewawancara:</span>
+                    <strong class="text-slate-900" id="reminder-interviewer">-</strong>
+                </div>
+                <div class="flex justify-between items-start" id="reminder-venue-row">
+                    <span class="text-slate-500" id="reminder-venue-label">Media / Lokasi:</span>
+                    <span class="text-slate-900 font-medium text-right text-[11px] max-w-[240px] break-words" id="reminder-venue-val">-</span>
+                </div>
+            </div>
+
+            <!-- Online Checklist Section (Muncul jika kategori Online) -->
+            <div id="reminder-fields-online" class="space-y-3">
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Link Google Meet</label>
+                    <input type="url" id="reminder-link-input" oninput="updateReminderPreviews()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px] text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Instruksi Kesiapan Wawancara Online</label>
+                    <textarea id="reminder-online-prep" oninput="updateReminderPreviews()" rows="4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">1. Pastikan koneksi internet stabil & ruangan tenang/bebas gangguan.
+2. Siapkan laptop/PC dengan webcam dan mikrofon aktif.
+3. Siapkan file CV dan portofolio digital yang siap dipresentasikan (screen share).
+4. Bergabung ke link Google Meet 5-10 menit sebelum waktu wawancara dimulai.</textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Ketentuan Pakaian (Dresscode)</label>
+                    <input type="text" id="reminder-online-dress" oninput="updateReminderPreviews()" value="Berpakaian kemeja formal / rapi dan sopan (standar wawancara kerja profesional)." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
+                </div>
+            </div>
+
+            <!-- Offline Checklist Section (Muncul jika kategori Offline) -->
+            <div id="reminder-fields-offline" class="hidden space-y-3">
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Lokasi Pertemuan & Ruangan Kantor</label>
+                    <textarea id="reminder-offline-location" oninput="updateReminderPreviews()" rows="2" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta</textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Dokumen & Perlengkapan yang Wajib Dibawa</label>
+                    <textarea id="reminder-offline-prep" oninput="updateReminderPreviews()" rows="4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">1. Berkas cetak CV & Portofolio terbaru (hardcopy rangkap 2).
+2. Kartu Tanda Pengenal asli (KTP / SIM) untuk penukaran visitor pass di resepsionis lobi.
+3. Alat tulis pribadi (pulpen hitam) dan laptop jika ada pengujian teknis.
+4. Hadir di lokasi kantor 15 menit sebelum waktu wawancara untuk proses registrasi tamu.</textarea>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Ketentuan Pakaian (Dresscode)</label>
+                    <input type="text" id="reminder-offline-dress" oninput="updateReminderPreviews()" value="Pakaian kerja formal: kemeja berkerah rapi, celana bahan panjang (non-jeans), dan sepatu tertutup pantofel." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
+                </div>
+            </div>
+
+            <!-- Pesan Tambahan Opsional -->
+            <div>
+                <label class="block font-bold text-slate-800 mb-1">Catatan Tambahan (Opsional)</label>
+                <input type="text" id="reminder-extra-notes" oninput="updateReminderPreviews()" placeholder="Contoh: Konfirmasikan jika memerlukan petunjuk arah lokasi." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
+            </div>
+
+            <!-- Preview Tab Toggle (Email vs WhatsApp) -->
+            <div class="border border-slate-200 rounded-xl p-3 bg-slate-50 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-800 text-[11px]">Preview Pesan Siap Kirim:</span>
+                    <div class="flex gap-1 text-[10px] font-semibold">
+                        <button type="button" onclick="switchReminderPreview('email')" id="btn-prev-email" class="px-2.5 py-1 rounded bg-slate-900 text-white">Email</button>
+                        <button type="button" onclick="switchReminderPreview('wa')" id="btn-prev-wa" class="px-2.5 py-1 rounded bg-white text-slate-600 border border-slate-200 hover:bg-slate-100">WhatsApp</button>
+                    </div>
+                </div>
+
+                <div id="prev-box-email" class="p-3 bg-white rounded-lg border border-slate-200 text-[11px] text-slate-700 leading-relaxed max-h-36 overflow-y-auto whitespace-pre-wrap select-all font-sans">
+                    -
+                </div>
+
+                <div id="prev-box-wa" class="hidden p-3 bg-emerald-50/40 rounded-lg border border-emerald-200 text-[11px] text-slate-800 leading-relaxed max-h-36 overflow-y-auto whitespace-pre-wrap select-all font-mono">
+                    -
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="px-5 py-3.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
+            <button onclick="closeModal('modal-reminder')" class="px-3 py-1.5 text-slate-500 hover:text-slate-800">
+                Batal
+            </button>
+            <div class="flex items-center gap-2">
+                <button onclick="copyReminderWhatsApp()" class="px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl transition">
+                    Salin Teks WA
+                </button>
+                <button onclick="openWhatsAppDirect()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl transition shadow-2xs">
+                    Kirim via WhatsApp
+                </button>
+                <button onclick="submitSendEmailReminder()" id="btn-submit-reminder" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition shadow-xs">
+                    Kirim Email Pengingat
                 </button>
             </div>
         </div>
@@ -477,17 +623,12 @@
                 }
             }
 
-            // Action button
+            // Action button (strictly 1 button per row)
             let actionBtn = '';
             if (c.status === 'New Application') {
                 actionBtn = `<button onclick="openScheduleModal(${c.id}, '${escapeHtml(c.nama)}', '${escapeHtml(c.posisi)}')" class="px-3.5 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs">Jadwalkan</button>`;
             } else if (c.status === 'Reschedule Requested') {
-                actionBtn = `
-                    <div class="flex items-center justify-end gap-1.5">
-                        <button onclick="openRescheduleModal(${latestInterview?.id}, '${escapeHtml(c.nama)}', '${escapeHtml(c.posisi)}', '${escapeHtml(reschedReq?.alasan || '-')}', '${escapeHtml(reschedReq?.saran_waktu || '-')}')" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs">Tinjau</button>
-                        <button onclick="openCandidateDetailModal(${c.id})" class="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold rounded-lg text-xs transition shadow-2xs">Detail</button>
-                    </div>
-                `;
+                actionBtn = `<button onclick="openRescheduleModal(${latestInterview?.id}, '${escapeHtml(c.nama)}', '${escapeHtml(c.posisi)}', '${escapeHtml(reschedReq?.alasan || '-')}', '${escapeHtml(reschedReq?.saran_waktu || '-')}')" class="px-3.5 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs">Tinjau</button>`;
             } else if (c.status === 'Confirmed') {
                 actionBtn = `<button onclick="openCandidateDetailModal(${c.id})" class="px-3.5 py-1 bg-white hover:bg-red-50 hover:text-red-700 hover:border-red-200 border border-slate-200 text-slate-800 font-bold rounded-lg text-xs transition shadow-2xs">Detail</button>`;
             } else if (latestInterview) {
@@ -683,10 +824,14 @@
         }
     }
 
+    let currentDetailCandidate = null;
+    let reminderCandidate = null;
+
     function openCandidateDetailModal(candId) {
         const c = candidatesData.find(item => item.id == candId);
         if (!c) return;
 
+        currentDetailCandidate = c;
         const interview = c.latest_interview;
         const token = interview?.token?.token;
 
@@ -699,14 +844,19 @@
         let statusBadgeHtml = '';
         if (c.status === 'Confirmed') {
             statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Terkonfirmasi</span>';
+            document.getElementById('detail-reminder-section').classList.remove('hidden');
         } else if (c.status === 'Invited') {
-            statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">Menunggu</span>';
+            statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">Menunggu</span>';
+            document.getElementById('detail-reminder-section').classList.add('hidden');
         } else if (c.status === 'Reschedule Requested') {
             statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300">Reschedule (1x)</span>';
+            document.getElementById('detail-reminder-section').classList.add('hidden');
         } else if (c.status === 'Declined') {
             statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">Menolak</span>';
+            document.getElementById('detail-reminder-section').classList.add('hidden');
         } else {
             statusBadgeHtml = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">${c.status}</span>`;
+            document.getElementById('detail-reminder-section').classList.add('hidden');
         }
         document.getElementById('detail-status-badge').innerHTML = statusBadgeHtml;
 
@@ -750,6 +900,200 @@
         }
 
         document.getElementById('modal-candidate-detail').classList.remove('hidden');
+    }
+
+    function openReminderModalFromDetail() {
+        if (!currentDetailCandidate) return;
+        closeModal('modal-candidate-detail');
+        openReminderModal(currentDetailCandidate.id);
+    }
+
+    function openReminderModal(candId) {
+        const c = candidatesData.find(item => item.id == candId);
+        if (!c) return;
+
+        reminderCandidate = c;
+        const interview = c.latest_interview;
+        if (!interview) return;
+
+        document.getElementById('reminder-interview-id').value = interview.id;
+        document.getElementById('reminder-cand-name').innerText = c.nama;
+        document.getElementById('reminder-cand-posisi').innerText = c.posisi;
+
+        const isOnline = interview.kategori === 'online';
+        document.getElementById('reminder-kategori-badge').innerText = isOnline ? 'Online (Virtual)' : 'Offline (Tatap Muka)';
+        document.getElementById('reminder-kategori-badge').className = isOnline ? 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-900 text-white' : 'px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-800';
+
+        const dateObj = new Date(interview.tanggal_waktu);
+        const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
+        document.getElementById('reminder-schedule-time').innerText = formattedDate;
+        document.getElementById('reminder-interviewer').innerText = interview.interviewer || 'Tim HR Nanggala Kencana Rekatama Indonesia';
+
+        if (isOnline) {
+            document.getElementById('reminder-venue-label').innerText = 'Google Meet:';
+            document.getElementById('reminder-venue-val').innerText = interview.link_meeting || 'https://meet.google.com/nkri-interview';
+            document.getElementById('reminder-fields-online').classList.remove('hidden');
+            document.getElementById('reminder-fields-offline').classList.add('hidden');
+            document.getElementById('reminder-link-input').value = interview.link_meeting || 'https://meet.google.com/nkri-interview';
+        } else {
+            document.getElementById('reminder-venue-label').innerText = 'Lokasi:';
+            document.getElementById('reminder-venue-val').innerText = interview.lokasi || 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta';
+            document.getElementById('reminder-fields-online').classList.add('hidden');
+            document.getElementById('reminder-fields-offline').classList.remove('hidden');
+            document.getElementById('reminder-offline-location').value = interview.lokasi || 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta';
+        }
+
+        updateReminderPreviews();
+        document.getElementById('modal-reminder').classList.remove('hidden');
+    }
+
+    function updateReminderPreviews() {
+        if (!reminderCandidate) return;
+        const c = reminderCandidate;
+        const interview = c.latest_interview;
+        const isOnline = interview?.kategori === 'online';
+
+        const dateText = document.getElementById('reminder-schedule-time').innerText;
+        const interviewer = document.getElementById('reminder-interviewer').innerText;
+        const extraNotes = document.getElementById('reminder-extra-notes').value.trim();
+
+        let prepText = '';
+        let dressText = '';
+        let venueText = '';
+
+        if (isOnline) {
+            venueText = 'Google Meet: ' + (document.getElementById('reminder-link-input').value || 'https://meet.google.com/nkri-interview');
+            prepText = document.getElementById('reminder-online-prep').value;
+            dressText = document.getElementById('reminder-online-dress').value;
+        } else {
+            venueText = 'Lokasi Kantor: ' + (document.getElementById('reminder-offline-location').value || 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta');
+            prepText = document.getElementById('reminder-offline-prep').value;
+            dressText = document.getElementById('reminder-offline-dress').value;
+        }
+
+        // Email Preview Content
+        const emailContent = `Subjek: [PENGINGAT RESMI] Jadwal Wawancara Kerja: ${c.posisi} - ${c.nama} (Nanggala Kencana Rekatama Indonesia)
+
+Halo ${c.nama},
+
+Kami mengingatkan jadwal sesi wawancara kerja Anda di Nanggala Kencana Rekatama Indonesia yang telah terkonfirmasi:
+
+• Posisi: ${c.posisi}
+• Waktu: ${dateText}
+• Pewawancara: ${interviewer}
+• ${venueText}
+
+INSTRUKSI & PERSIAPAN:
+${prepText}
+
+KETENTUAN PAKAIAN:
+${dressText}
+${extraNotes ? '\nCATATAN TAMBAHAN:\n' + extraNotes : ''}
+
+Salam hangat,
+Tim HR Nanggala Kencana Rekatama Indonesia`;
+
+        document.getElementById('prev-box-email').innerText = emailContent;
+
+        // WhatsApp Preview Content
+        const waContent = `Halo *${c.nama}*,
+
+Kami dari Tim HR *Nanggala Kencana Rekatama Indonesia* mengingatkan jadwal wawancara kerja Anda yang telah terkonfirmasi:
+
+📋 *Posisi:* ${c.posisi}
+📅 *Waktu:* ${dateText}
+👤 *Pewawancara:* ${interviewer}
+${isOnline ? '💻 *Tautan Google Meet:* ' + (document.getElementById('reminder-link-input').value || 'https://meet.google.com/nkri-interview') : '🏢 *Lokasi Kantor:* ' + (document.getElementById('reminder-offline-location').value || 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta')}
+
+📌 *Petunjuk Persiapan:*
+${prepText}
+
+👔 *Ketentuan Pakaian (Dresscode):*
+${dressText}
+${extraNotes ? '\n⚠️ *Catatan:* ' + extraNotes : ''}
+
+Mohon hadir tepat waktu. Terima kasih dan sukses untuk sesi wawancara Anda!`;
+
+        document.getElementById('prev-box-wa').innerText = waContent;
+    }
+
+    function switchReminderPreview(type) {
+        const btnEmail = document.getElementById('btn-prev-email');
+        const btnWa = document.getElementById('btn-prev-wa');
+        const boxEmail = document.getElementById('prev-box-email');
+        const boxWa = document.getElementById('prev-box-wa');
+
+        if (type === 'email') {
+            btnEmail.className = 'px-2.5 py-1 rounded bg-slate-900 text-white';
+            btnWa.className = 'px-2.5 py-1 rounded bg-white text-slate-600 border border-slate-200 hover:bg-slate-100';
+            boxEmail.classList.remove('hidden');
+            boxWa.classList.add('hidden');
+        } else {
+            btnWa.className = 'px-2.5 py-1 rounded bg-emerald-700 text-white';
+            btnEmail.className = 'px-2.5 py-1 rounded bg-white text-slate-600 border border-slate-200 hover:bg-slate-100';
+            boxEmail.classList.add('hidden');
+            boxWa.classList.remove('hidden');
+        }
+    }
+
+    function copyReminderWhatsApp() {
+        const text = document.getElementById('prev-box-wa').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Teks pesan WhatsApp berhasil disalin ke clipboard!');
+        });
+    }
+
+    function openWhatsAppDirect() {
+        if (!reminderCandidate) return;
+        let phone = (reminderCandidate.telepon || '').replace(/[^0-9]/g, '');
+        if (phone.startsWith('0')) {
+            phone = '62' + phone.substring(1);
+        }
+        const text = document.getElementById('prev-box-wa').innerText;
+        const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank');
+        showToast('Membuka WhatsApp Web...');
+    }
+
+    async function submitSendEmailReminder() {
+        if (!reminderCandidate) return;
+        const interviewId = document.getElementById('reminder-interview-id').value;
+        const submitBtn = document.getElementById('btn-submit-reminder');
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Mengirim...';
+
+        try {
+            const isOnline = reminderCandidate.latest_interview?.kategori === 'online';
+            const res = await fetch(`/api/interviews/${interviewId}/reminder`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    channel: 'email',
+                    catatan_persiapan: isOnline ? document.getElementById('reminder-online-prep')?.value : document.getElementById('reminder-offline-prep')?.value,
+                    ketentuan_pakaian: isOnline ? document.getElementById('reminder-online-dress')?.value : document.getElementById('reminder-offline-dress')?.value,
+                    pesan_tambahan: document.getElementById('reminder-extra-notes')?.value,
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                closeModal('modal-reminder');
+                showToast(`Email pengingat berhasil dikirim ke ${reminderCandidate.nama}!`);
+                loadDashboardData();
+            } else {
+                showToast(data.message || 'Gagal mengirim pengingat', 'error');
+            }
+        } catch (error) {
+            console.error('Error sending reminder:', error);
+            showToast('Terjadi kesalahan saat mengirim pengingat', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Kirim Email Pengingat';
+        }
     }
 
     function copyMeetingLink() {
