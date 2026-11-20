@@ -373,4 +373,38 @@ class RecruitmentBackendTest extends TestCase
         $resetResponse->assertStatus(200)
                       ->assertJson(['success' => true]);
     }
+
+    public function test_super_admin_can_manage_default_settings(): void
+    {
+        // 1. Get settings
+        $res = $this->getJson('/api/admin/settings');
+        $res->assertStatus(200)
+            ->assertJson(['success' => true])
+            ->assertJsonStructure(['data', 'details']);
+
+        // 2. Update settings
+        $update = $this->putJson('/api/admin/settings', [
+            'default_interviewer' => 'Head of HR NKRI',
+            'default_duration' => '60',
+            'default_max_reschedule' => '1',
+        ]);
+        $update->assertStatus(200)
+               ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('settings', [
+            'key' => 'default_interviewer',
+            'value' => 'Head of HR NKRI',
+        ]);
+
+        // 3. Reset settings
+        $reset = $this->postJson('/api/admin/settings/reset');
+        $reset->assertStatus(200)
+              ->assertJson(['success' => true]);
+
+        // 4. Get audit logs
+        $logs = $this->getJson('/api/admin/logs');
+        $logs->assertStatus(200)
+             ->assertJson(['success' => true])
+             ->assertJsonStructure(['status_logs', 'notification_logs']);
+    }
 }

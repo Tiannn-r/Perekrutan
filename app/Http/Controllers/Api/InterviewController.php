@@ -10,6 +10,7 @@ use App\Models\NotificationLog;
 use App\Models\Reminder;
 use App\Models\RescheduleRequest;
 use App\Models\ResponseToken;
+use App\Models\Setting;
 use App\Models\StatusLog;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -48,20 +49,26 @@ class InterviewController extends Controller
         $candidate = Candidate::findOrFail($request->input('candidate_id'));
         $scheduleDate = Carbon::parse($request->input('tanggal_waktu'));
         
-        // Default deadline: 24 hours before interview
+        // Default deadline: configured hours before interview (default 24h)
+        $deadlineHours = (int)Setting::getVal('default_deadline_hours', 24);
         $deadline = $request->filled('batas_respon') 
             ? Carbon::parse($request->input('batas_respon')) 
-            : $scheduleDate->copy()->subHours(24);
+            : $scheduleDate->copy()->subHours($deadlineHours);
+
+        $defaultDuration = (int)Setting::getVal('default_duration', 45);
+        $defaultInterviewer = Setting::getVal('default_interviewer', 'Tim HR Nanggala Kencana Rekatama Indonesia');
+        $defaultMeeting = Setting::getVal('default_meet_prefix', 'https://meet.google.com/nkri-interview');
+        $defaultLocation = Setting::getVal('default_location', 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta');
 
         $interview = Interview::create([
             'candidate_id' => $candidate->id,
             'tahap' => $request->input('tahap', 'Tahap 1'),
             'kategori' => $request->input('kategori'),
             'tanggal_waktu' => $scheduleDate,
-            'durasi_menit' => $request->input('durasi_menit', 45),
-            'interviewer' => $request->input('interviewer'),
-            'link_meeting' => $request->input('kategori') === 'online' ? $request->input('link_meeting') : null,
-            'lokasi' => $request->input('kategori') === 'offline' ? $request->input('lokasi') : null,
+            'durasi_menit' => $request->input('durasi_menit') ?: $defaultDuration,
+            'interviewer' => $request->input('interviewer') ?: $defaultInterviewer,
+            'link_meeting' => $request->input('kategori') === 'online' ? ($request->input('link_meeting') ?: $defaultMeeting) : null,
+            'lokasi' => $request->input('kategori') === 'offline' ? ($request->input('lokasi') ?: $defaultLocation) : null,
             'status' => 'Invited',
             'jumlah_reschedule' => 0,
             'batas_respon' => $deadline,

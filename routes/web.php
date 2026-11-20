@@ -8,5 +8,6 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/admin', [DashboardController::class, 'superAdmin'])->name('admin');
 Route::get('/portal/{token}', [DashboardController::class, 'portal'])->name('portal');
 Route::get('/email-preview/{token?}', [DashboardController::class, 'emailPreview'])->name('email.preview');

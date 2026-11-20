@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\CandidateController;
 use App\Http\Controllers\Api\InterviewController;
 use App\Http\Controllers\Api\PortalController;
@@ -34,3 +35,9 @@ Route::post('/templates/{key}/preview', [TemplateController::class, 'preview']);
 // 4. Candidate Response Portal Endpoints
 Route::get('/portal/{token}', [PortalController::class, 'show']);
 Route::post('/portal/{token}/respond', [PortalController::class, 'respond']);
+
+// 5. Super Admin Default Settings & System Audit Logs
+Route::get('/admin/settings', [AdminController::class, 'getSettings']);
+Route::put('/admin/settings', [AdminController::class, 'updateSettings']);
+Route::post('/admin/settings/reset', [AdminController::class, 'resetSettings']);
+Route::get('/admin/logs', [AdminController::class, 'getLogs']);

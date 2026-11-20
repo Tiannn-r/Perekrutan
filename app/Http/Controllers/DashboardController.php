@@ -18,6 +18,14 @@ class DashboardController extends Controller
     }
 
     /**
+     * Render the Super Admin Panel Page.
+     */
+    public function superAdmin(): View
+    {
+        return view('super-admin');
+    }
+
+    /**
      * Render the Candidate Response Landing Page directly via token URL.
      */
     public function portal(string $token): View
