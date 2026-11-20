@@ -7,6 +7,7 @@ use App\Models\Candidate;
 use App\Models\Interview;
 use App\Models\MessageTemplate;
 use App\Models\NotificationLog;
+use App\Models\Reminder;
 use App\Models\RescheduleRequest;
 use App\Models\ResponseToken;
 use App\Models\StatusLog;
@@ -189,16 +190,66 @@ class InterviewController extends Controller
     }
 
     /**
-     * Send interview reminder to candidate who has confirmed attendance.
+     * Get reminders status for an interview.
+     */
+    public function getReminders($id): JsonResponse
+    {
+        $interview = Interview::with(['candidate', 'reminders'])->findOrFail($id);
+
+        $prepReminder = $interview->reminders->firstWhere('jenis', 'persiapan');
+        $dayReminder = $interview->reminders->firstWhere('jenis', 'hari_h');
+
+        return response()->json([
+            'success' => true,
+            'interview_id' => $interview->id,
+            'status' => $interview->status,
+            'kategori' => $interview->kategori,
+            'reminders' => [
+                'persiapan' => $prepReminder ? [
+                    'status_kirim' => $prepReminder->status_kirim,
+                    'dikirim_at' => $prepReminder->dikirim_at ? $prepReminder->dikirim_at->translatedFormat('d M Y, H:i') . ' WIB' : null,
+                    'subjek' => $prepReminder->subjek,
+                ] : [
+                    'status_kirim' => 'belum dikirim',
+                    'dikirim_at' => null,
+                    'subjek' => null,
+                ],
+                'hari_h' => $dayReminder ? [
+                    'status_kirim' => $dayReminder->status_kirim,
+                    'dikirim_at' => $dayReminder->dikirim_at ? $dayReminder->dikirim_at->translatedFormat('d M Y, H:i') . ' WIB' : null,
+                    'subjek' => $dayReminder->subjek,
+                ] : [
+                    'status_kirim' => 'belum dikirim',
+                    'dikirim_at' => null,
+                    'subjek' => null,
+                ],
+            ],
+        ]);
+    }
+
+    /**
+     * Send interview reminder (persiapan / hari_h) to candidate who has confirmed attendance.
+     * Complies with PRD Rules BR-07, BR-08, BR-09, BR-10.
      */
     public function sendReminder(Request $request, $id): JsonResponse
     {
         $interview = Interview::with('candidate')->findOrFail($id);
 
+        // Business Rule BR-07: Pengingat hanya dikirim untuk jadwal berstatus Confirmed
+        if ($interview->status !== 'Confirmed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengingat hanya dapat dikirim untuk jadwal berstatus Confirmed (Aturan BR-07)',
+            ], 422);
+        }
+
         $validator = Validator::make($request->all(), [
+            'jenis' => 'nullable|in:persiapan,hari_h',
             'channel' => 'nullable|in:email,whatsapp,both',
             'subjek' => 'nullable|string|max:255',
             'isi_pesan' => 'nullable|string',
+            'link_meeting' => 'nullable|string|max:500',
+            'lokasi' => 'nullable|string|max:500',
             'catatan_persiapan' => 'nullable|string|max:2000',
             'ketentuan_pakaian' => 'nullable|string|max:500',
             'pesan_tambahan' => 'nullable|string|max:1000',
@@ -212,12 +263,40 @@ class InterviewController extends Controller
             ], 422);
         }
 
-        $channel = $request->input('channel', 'email');
+        $jenis = $request->input('jenis', 'persiapan');
+        $mode = $interview->kategori ?: 'online';
         $candidate = $interview->candidate;
 
-        // Resolve template & variables
-        $templateKey = 'reminder_' . ($interview->kategori ?: 'online');
-        $template = MessageTemplate::getByKey($templateKey);
+        // If meeting link or location is updated in request, persist it to interview
+        if ($request->filled('link_meeting')) {
+            $interview->update(['link_meeting' => $request->input('link_meeting')]);
+        }
+        if ($request->filled('lokasi')) {
+            $interview->update(['lokasi' => $request->input('lokasi')]);
+        }
+
+        // Business Rule BR-08: Wawancara Online: tautan meeting wajib terisi sebelum pengingat Hari H dikirim
+        if ($mode === 'online' && $jenis === 'hari_h' && empty($interview->link_meeting)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tautan Google Meet wajib terisi sebelum pengingat Hari H dikirim (Aturan BR-08)',
+            ], 422);
+        }
+
+        // Business Rule BR-09: Wawancara Offline: lokasi dan jam wajib terisi sebelum pengingat dikirim
+        if ($mode === 'offline' && (empty($interview->lokasi) || empty($interview->tanggal_waktu))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lokasi kantor dan jam wajib terisi sebelum pengingat dikirim (Aturan BR-09)',
+            ], 422);
+        }
+
+        // Resolve template: specific (e.g. reminder_online_prep, reminder_online_day) with fallback
+        $specificTemplateKey = "reminder_{$mode}_{$jenis}";
+        $fallbackTemplateKey = "reminder_{$mode}";
+
+        $template = MessageTemplate::where('key', $specificTemplateKey)->first()
+            ?? MessageTemplate::getByKey($fallbackTemplateKey);
 
         $prepNotes = $request->input('catatan_persiapan', $template?->petunjuk_persiapan);
         $dressNotes = $request->input('ketentuan_pakaian', $template?->ketentuan_pakaian);
@@ -228,7 +307,7 @@ class InterviewController extends Controller
             'posisi' => $candidate->posisi,
             'jadwal' => $interview->tanggal_waktu ? $interview->tanggal_waktu->translatedFormat('l, d F Y, H:i') . ' WIB' : '-',
             'pewawancara' => $interview->interviewer ?? 'Tim Rekrutmen',
-            'kategori' => $interview->kategori === 'offline' ? 'Offline (Tatap Muka)' : 'Online (Google Meet)',
+            'kategori' => $mode === 'offline' ? 'Offline (Tatap Muka)' : 'Online (Google Meet)',
             'link_meeting' => $interview->link_meeting ?? 'https://meet.google.com/...',
             'lokasi' => $interview->lokasi ?? 'Gedung Nanggala Kencana Rekatama Indonesia',
             'persiapan' => $prepNotes,
@@ -249,15 +328,31 @@ class InterviewController extends Controller
                   ->subject($finalSubject);
             });
         } catch (\Throwable $e) {
-            // Log mail sending failure if any
             report($e);
         }
 
+        // Record in reminders table (FR-24 & Section 13)
+        $reminderRecord = Reminder::updateOrCreate(
+            [
+                'interview_id' => $interview->id,
+                'jenis' => $jenis,
+            ],
+            [
+                'mode' => $mode,
+                'subjek' => $finalSubject,
+                'isi' => $finalBody,
+                'dikirim_oleh' => 'HR',
+                'dikirim_at' => now(),
+                'status_kirim' => 'terkirim',
+            ]
+        );
+
         // Record notification log
+        $labelJenis = $jenis === 'hari_h' ? 'Hari H' : 'Persiapan';
         NotificationLog::create([
             'interview_id' => $interview->id,
             'penerima' => $candidate->email,
-            'tipe' => 'Pengingat Wawancara (Email)',
+            'tipe' => "Pengingat {$labelJenis} (Email)",
             'status_kirim' => 'Sent',
         ]);
 
@@ -268,17 +363,20 @@ class InterviewController extends Controller
             'dari_status' => $interview->status,
             'ke_status' => $interview->status,
             'aktor' => 'HR',
-            'keterangan' => "Email pengingat wawancara dikirim ke {$candidate->email}",
+            'keterangan' => "Email pengingat {$labelJenis} ({$mode}) dikirim ke {$candidate->email}",
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Email pengingat wawancara berhasil dikirim ke ' . $candidate->nama . ' (' . $candidate->email . ')',
+            'message' => "Email pengingat {$labelJenis} berhasil dikirim ke {$candidate->nama} ({$candidate->email})",
             'data' => [
+                'reminder_id' => $reminderRecord->id,
+                'jenis' => $jenis,
+                'mode' => $mode,
+                'kategori' => $mode,
                 'candidate' => $candidate->nama,
                 'email' => $candidate->email,
                 'subjek' => $finalSubject,
-                'kategori' => $interview->kategori,
                 'sent_at' => now()->translatedFormat('d F Y, H:i') . ' WIB',
             ],
         ]);

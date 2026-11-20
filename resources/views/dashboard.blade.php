@@ -350,19 +350,49 @@
                 </div>
             </div>
 
-            <!-- Action Pengingat Wawancara (Untuk Kandidat Terkonfirmasi) -->
-            <div id="detail-reminder-section" class="hidden p-4 bg-red-50/60 border border-red-200 rounded-xl space-y-2">
-                <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-900 text-xs">Pengingat Wawancara</span>
+            <!-- Action Pengingat Wawancara (Sesuai PRD FR-19 s/d FR-24) -->
+            <div id="detail-reminder-section" class="hidden p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div class="flex items-center justify-between pb-1 border-b border-slate-200">
+                    <div>
+                        <span class="font-bold text-slate-900 text-xs">Tugas Pengingat Wawancara (HR)</span>
+                        <p class="text-[11px] text-slate-500">Kandidat terkonfirmasi wajib menerima pengingat persiapan dan Hari H</p>
+                    </div>
                     <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">Terkonfirmasi</span>
                 </div>
-                <p class="text-[11px] text-slate-600 leading-relaxed">
-                    Kandidat telah menyetujui jadwal. Kirimkan email pengingat resmi ke inbox kandidat berisi tautan Google Meet (online) atau lokasi kantor (offline), petunjuk persiapan/dokumen yang wajib dibawa, dan ketentuan pakaian resmi.
-                </p>
-                <div class="pt-1">
-                    <button onclick="openReminderModalFromDetail()" class="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-2">
-                        Kirim Pengingat Wawancara (Email)
-                    </button>
+
+                <!-- 2 Tasks Grid: Pengingat Persiapan & Pengingat Hari H -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <!-- Task 1: Pengingat Persiapan -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 space-y-2 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="font-bold text-slate-800 text-xs">1. Pengingat Persiapan</span>
+                                <span id="badge-reminder-persiapan" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Belum Dikirim</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-normal" id="desc-reminder-persiapan">
+                                Teknis koneksi, webcam, mic, berkas digital (Online) atau dokumen fisik (Offline).
+                            </p>
+                        </div>
+                        <button onclick="openReminderModalFromDetail('persiapan')" class="w-full py-1.5 px-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-2xs">
+                            Kirim Persiapan
+                        </button>
+                    </div>
+
+                    <!-- Task 2: Pengingat Hari H -->
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 space-y-2 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="font-bold text-slate-800 text-xs">2. Pengingat Hari H</span>
+                                <span id="badge-reminder-hari_h" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Belum Dikirim</span>
+                            </div>
+                            <p class="text-[11px] text-slate-500 mt-1 leading-normal" id="desc-reminder-hari_h">
+                                Tautan Google Meet untuk join (Online) atau jam, lokasi ruangan, dan ajakan hadir (Offline).
+                            </p>
+                        </div>
+                        <button onclick="openReminderModalFromDetail('hari_h')" class="w-full py-1.5 px-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs transition shadow-2xs">
+                            Kirim Hari H
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -384,13 +414,17 @@
         <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <img src="{{ asset('images/nkri-icon.png') }}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain" alt="Logo">
-                <h3 class="font-bold text-xs tracking-wide">Kirim Pengingat Wawancara (Email)</h3>
+                <div>
+                    <h3 class="font-bold text-xs tracking-wide" id="modal-reminder-title">Kirim Pengingat Wawancara</h3>
+                    <p class="text-[10px] text-red-100" id="modal-reminder-subtitle">Email pengingat resmi ke inbox kandidat</p>
+                </div>
             </div>
             <button onclick="closeModal('modal-reminder')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
         </div>
 
         <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
             <input type="hidden" id="reminder-interview-id">
+            <input type="hidden" id="reminder-jenis" value="persiapan">
 
             <!-- Candidate Summary & Target Email -->
             <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -513,16 +547,22 @@
         </div>
 
         <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
-            <!-- Template Selector Tabs -->
-            <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
-                <button type="button" onclick="selectTemplateTab('reminder_online')" id="tmpl-tab-reminder_online" class="flex-1 py-1.5 px-2 rounded-lg bg-red-600 text-white shadow-xs text-center transition">
-                    Pengingat Online
+            <!-- Template Selector Tabs (Sesuai 5 Kategori PRD) -->
+            <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold overflow-x-auto">
+                <button type="button" onclick="selectTemplateTab('reminder_online_prep')" id="tmpl-tab-reminder_online_prep" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg bg-red-600 text-white shadow-xs text-center transition">
+                    Persiapan Online
                 </button>
-                <button type="button" onclick="selectTemplateTab('reminder_offline')" id="tmpl-tab-reminder_offline" class="flex-1 py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
-                    Pengingat Offline
+                <button type="button" onclick="selectTemplateTab('reminder_online_day')" id="tmpl-tab-reminder_online_day" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Hari H Online (Meet)
                 </button>
-                <button type="button" onclick="selectTemplateTab('invitation')" id="tmpl-tab-invitation" class="flex-1 py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
-                    Undangan Wawancara
+                <button type="button" onclick="selectTemplateTab('reminder_offline_prep')" id="tmpl-tab-reminder_offline_prep" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Persiapan Offline
+                </button>
+                <button type="button" onclick="selectTemplateTab('reminder_offline_day')" id="tmpl-tab-reminder_offline_day" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Hari H Offline
+                </button>
+                <button type="button" onclick="selectTemplateTab('invitation')" id="tmpl-tab-invitation" class="flex-1 min-w-[90px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Undangan
                 </button>
             </div>
 
@@ -920,6 +960,35 @@
 
     let currentDetailCandidate = null;
     let reminderCandidate = null;
+    let reminderJenis = 'persiapan';
+
+    function updateDetailReminderBadges(interview) {
+        const badgePrep = document.getElementById('badge-reminder-persiapan');
+        const badgeDay = document.getElementById('badge-reminder-hari_h');
+        if (!badgePrep || !badgeDay) return;
+
+        const reminders = interview?.reminders || [];
+        const prepRem = reminders.find(r => r.jenis === 'persiapan');
+        const dayRem = reminders.find(r => r.jenis === 'hari_h');
+
+        if (prepRem && prepRem.status_kirim === 'terkirim') {
+            const timeStr = prepRem.dikirim_at ? new Date(prepRem.dikirim_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' WIB' : 'Terkirim';
+            badgePrep.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+            badgePrep.innerText = `Terkirim (${timeStr})`;
+        } else {
+            badgePrep.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600';
+            badgePrep.innerText = 'Belum Dikirim';
+        }
+
+        if (dayRem && dayRem.status_kirim === 'terkirim') {
+            const timeStr = dayRem.dikirim_at ? new Date(dayRem.dikirim_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' WIB' : 'Terkirim';
+            badgeDay.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800';
+            badgeDay.innerText = `Terkirim (${timeStr})`;
+        } else {
+            badgeDay.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600';
+            badgeDay.innerText = 'Belum Dikirim';
+        }
+    }
 
     function openCandidateDetailModal(candId) {
         const c = candidatesData.find(item => item.id == candId);
@@ -939,6 +1008,9 @@
         if (c.status === 'Confirmed') {
             statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Terkonfirmasi</span>';
             document.getElementById('detail-reminder-section').classList.remove('hidden');
+
+            // Update reminders badges (PRD FR-19, FR-24)
+            updateDetailReminderBadges(interview);
         } else if (c.status === 'Invited') {
             statusBadgeHtml = '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">Menunggu</span>';
             document.getElementById('detail-reminder-section').classList.add('hidden');
@@ -1031,13 +1103,13 @@
     function selectTemplateTab(key) {
         currentTemplateKey = key;
 
-        ['reminder_online', 'reminder_offline', 'invitation'].forEach(k => {
+        ['reminder_online_prep', 'reminder_online_day', 'reminder_offline_prep', 'reminder_offline_day', 'invitation'].forEach(k => {
             const btn = document.getElementById(`tmpl-tab-${k}`);
             if (btn) {
                 if (k === key) {
-                    btn.className = 'flex-1 py-1.5 px-2 rounded-lg bg-red-600 text-white shadow-xs text-center transition font-bold';
+                    btn.className = 'flex-1 min-w-[110px] py-1.5 px-2 rounded-lg bg-red-600 text-white shadow-xs text-center transition font-bold';
                 } else {
-                    btn.className = 'flex-1 py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition font-medium';
+                    btn.className = 'flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition font-medium';
                 }
             }
         });
@@ -1056,7 +1128,7 @@
 
         const prepRow = document.getElementById('tmpl-prep-dress-row');
         if (prepRow) {
-            prepRow.classList.toggle('hidden', key === 'invitation');
+            prepRow.classList.toggle('hidden', key === 'invitation' || key.includes('_day'));
         }
 
         updateTemplatePreviewLive();
@@ -1184,17 +1256,18 @@
         }
     }
 
-    function openReminderModalFromDetail() {
+    function openReminderModalFromDetail(jenis = 'persiapan') {
         if (!currentDetailCandidate) return;
         closeModal('modal-candidate-detail');
-        openReminderModal(currentDetailCandidate.id);
+        openReminderModal(currentDetailCandidate.id, jenis);
     }
 
-    async function openReminderModal(candId) {
+    async function openReminderModal(candId, jenis = 'persiapan') {
         const c = candidatesData.find(item => item.id == candId);
         if (!c) return;
 
         reminderCandidate = c;
+        reminderJenis = jenis;
         const interview = c.latest_interview;
         if (!interview) return;
 
@@ -1204,8 +1277,9 @@
         }
 
         const isOnline = interview.kategori === 'online';
-        const tmplKey = isOnline ? 'reminder_online' : 'reminder_offline';
-        const tmpl = appTemplates[tmplKey] || {
+        const specificTmplKey = `reminder_${interview.kategori || 'online'}_${jenis === 'hari_h' ? 'day' : 'prep'}`;
+        const fallbackTmplKey = `reminder_${interview.kategori || 'online'}`;
+        const tmpl = appTemplates[specificTmplKey] || appTemplates[fallbackTmplKey] || {
             subjek: `Pengingat Wawancara: {posisi} - {nama} (Nanggala Kencana Rekatama Indonesia)`,
             isi_pesan: `Halo {nama}, mengingatkan jadwal wawancara posisi {posisi}.`,
             petunjuk_persiapan: '',
@@ -1213,6 +1287,16 @@
         };
 
         document.getElementById('reminder-interview-id').value = interview.id;
+        document.getElementById('reminder-jenis').value = jenis;
+
+        // Update modal title and subtitle (PRD FR-20, FR-21, FR-22)
+        document.getElementById('modal-reminder-title').innerText = jenis === 'hari_h'
+            ? 'Kirim Pengingat Hari H (Email)'
+            : 'Kirim Pengingat Persiapan (Email)';
+        document.getElementById('modal-reminder-subtitle').innerText = jenis === 'hari_h'
+            ? (isOnline ? 'Tautan Google Meet langsung untuk bergabung ke rapat' : 'Jam kedatangan, alamat ruangan, dan ajakan hadir')
+            : (isOnline ? 'Petunjuk koneksi internet, kamera, mikrofon, dan berkas digital' : 'Dokumen fisik/kartu identitas yang wajib dibawa & dresscode');
+
         document.getElementById('reminder-cand-name').innerText = c.nama;
         document.getElementById('reminder-cand-posisi').innerText = c.posisi;
         document.getElementById('reminder-cand-email').innerText = c.email || 'email@kandidat.com';
@@ -1258,8 +1342,9 @@
         const c = reminderCandidate;
         const interview = c.latest_interview;
         const isOnline = interview?.kategori === 'online';
-        const tmplKey = isOnline ? 'reminder_online' : 'reminder_offline';
-        const tmpl = appTemplates[tmplKey];
+        const specificTmplKey = `reminder_${interview?.kategori || 'online'}_${reminderJenis === 'hari_h' ? 'day' : 'prep'}`;
+        const fallbackTmplKey = `reminder_${interview?.kategori || 'online'}`;
+        const tmpl = appTemplates[specificTmplKey] || appTemplates[fallbackTmplKey];
 
         const dateText = document.getElementById('reminder-schedule-time').innerText;
         const interviewer = document.getElementById('reminder-interviewer').innerText;
@@ -1329,6 +1414,7 @@ ${emailBody}`;
     async function submitSendEmailReminder() {
         if (!reminderCandidate) return;
         const interviewId = document.getElementById('reminder-interview-id').value;
+        const jenis = document.getElementById('reminder-jenis').value || 'persiapan';
         const submitBtn = document.getElementById('btn-submit-reminder');
         submitBtn.disabled = true;
         submitBtn.innerText = 'Mengirim...';
@@ -1346,9 +1432,12 @@ ${emailBody}`;
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
+                    jenis: jenis,
                     channel: 'email',
                     subjek: subject,
                     isi_pesan: fullBody,
+                    link_meeting: isOnline ? document.getElementById('reminder-link-input')?.value : null,
+                    lokasi: !isOnline ? document.getElementById('reminder-offline-location')?.value : null,
                     catatan_persiapan: isOnline ? document.getElementById('reminder-online-prep')?.value : document.getElementById('reminder-offline-prep')?.value,
                     ketentuan_pakaian: isOnline ? document.getElementById('reminder-online-dress')?.value : document.getElementById('reminder-offline-dress')?.value,
                     pesan_tambahan: document.getElementById('reminder-extra-notes')?.value,
@@ -1358,7 +1447,8 @@ ${emailBody}`;
             const data = await res.json();
             if (data.success) {
                 closeModal('modal-reminder');
-                showToast(`Email pengingat wawancara berhasil dikirim ke ${reminderCandidate.nama} (${reminderCandidate.email})!`);
+                const labelJenis = jenis === 'hari_h' ? 'Hari H' : 'persiapan';
+                showToast(`Email pengingat ${labelJenis} berhasil dikirim ke ${reminderCandidate.nama} (${reminderCandidate.email})!`);
                 loadDashboardData();
             } else {
                 showToast(data.message || 'Gagal mengirim email pengingat', 'error');

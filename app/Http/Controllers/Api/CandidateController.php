@@ -14,7 +14,11 @@ class CandidateController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Candidate::with(['latestInterview.token', 'latestInterview.latestRescheduleRequest']);
+        $query = Candidate::with([
+            'latestInterview.token',
+            'latestInterview.latestRescheduleRequest',
+            'latestInterview.reminders',
+        ]);
 
         // Filter by Status Tab
         $status = $request->query('status');

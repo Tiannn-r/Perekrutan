@@ -60,4 +60,9 @@ class Interview extends Model
     {
         return $this->hasMany(NotificationLog::class);
     }
+
+    public function reminders()
+    {
+        return $this->hasMany(Reminder::class);
+    }
 }

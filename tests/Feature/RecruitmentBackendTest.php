@@ -239,6 +239,99 @@ class RecruitmentBackendTest extends TestCase
             'candidate_id' => $candidate->id,
             'aktor' => 'HR',
         ]);
+
+        $this->assertDatabaseHas('reminders', [
+            'interview_id' => $interview->id,
+            'jenis' => 'persiapan',
+            'status_kirim' => 'terkirim',
+        ]);
+    }
+
+    public function test_two_stage_reminder_and_prd_business_rules()
+    {
+        $candidate = Candidate::create([
+            'nama' => 'User PRD',
+            'email' => 'prd@example.com',
+            'telepon' => '0815998877',
+            'posisi' => 'Backend Developer',
+            'status' => 'Confirmed',
+        ]);
+
+        $interview = Interview::create([
+            'candidate_id' => $candidate->id,
+            'kategori' => 'online',
+            'tanggal_waktu' => now()->addDays(1),
+            'interviewer' => 'Dimas Ardiansyah',
+            'link_meeting' => 'https://meet.google.com/prd-room',
+            'status' => 'Confirmed',
+        ]);
+
+        // 1. Send Persiapan Reminder (FR-20)
+        $resPrep = $this->postJson("/api/interviews/{$interview->id}/reminder", [
+            'jenis' => 'persiapan',
+            'channel' => 'email',
+            'catatan_persiapan' => 'Pastikan koneksi internet stabil & ruangan tenang.',
+        ]);
+        $resPrep->assertStatus(200);
+
+        $this->assertDatabaseHas('reminders', [
+            'interview_id' => $interview->id,
+            'jenis' => 'persiapan',
+            'status_kirim' => 'terkirim',
+        ]);
+
+        // 2. Send Hari H Reminder (FR-21)
+        $resDay = $this->postJson("/api/interviews/{$interview->id}/reminder", [
+            'jenis' => 'hari_h',
+            'channel' => 'email',
+        ]);
+        $resDay->assertStatus(200);
+
+        $this->assertDatabaseHas('reminders', [
+            'interview_id' => $interview->id,
+            'jenis' => 'hari_h',
+            'status_kirim' => 'terkirim',
+        ]);
+
+        // 3. Query reminder statuses (FR-24)
+        $resList = $this->getJson("/api/interviews/{$interview->id}/reminders");
+        $resList->assertStatus(200)
+                ->assertJson([
+                    'success' => true,
+                    'reminders' => [
+                        'persiapan' => ['status_kirim' => 'terkirim'],
+                        'hari_h' => ['status_kirim' => 'terkirim'],
+                    ],
+                ]);
+
+        // 4. Test BR-07: Cannot send reminder if interview status is not Confirmed
+        $unconfirmedInterview = Interview::create([
+            'candidate_id' => $candidate->id,
+            'kategori' => 'online',
+            'tanggal_waktu' => now()->addDays(3),
+            'interviewer' => 'Rian Pratama',
+            'status' => 'Invited',
+        ]);
+        $resBr07 = $this->postJson("/api/interviews/{$unconfirmedInterview->id}/reminder", [
+            'jenis' => 'persiapan',
+        ]);
+        $resBr07->assertStatus(422)
+                ->assertJson(['success' => false]);
+
+        // 5. Test BR-08: Online Hari H requires meeting link
+        $noLinkInterview = Interview::create([
+            'candidate_id' => $candidate->id,
+            'kategori' => 'online',
+            'tanggal_waktu' => now()->addDays(1),
+            'interviewer' => 'Rian Pratama',
+            'link_meeting' => null,
+            'status' => 'Confirmed',
+        ]);
+        $resBr08 = $this->postJson("/api/interviews/{$noLinkInterview->id}/reminder", [
+            'jenis' => 'hari_h',
+        ]);
+        $resBr08->assertStatus(422)
+                ->assertJson(['success' => false]);
     }
 
     public function test_hr_can_manage_message_templates_in_admin_panel()
