@@ -26,7 +26,7 @@
             <h3 class="font-black text-base sm:text-lg tracking-wide uppercase text-white mt-1 leading-snug">
                 Nanggala Kencana Rekatama Indonesia
             </h3>
-            <p class="text-xs text-red-100 font-medium tracking-wide">Undangan Resmi Wawancara Kerja</p>
+            <p class="text-xs text-red-100 font-medium tracking-wide">Undangan Wawancara</p>
         </div>
 
         <div class="p-6 space-y-5">
@@ -35,7 +35,7 @@
                 <span class="text-[10px] font-extrabold text-slate-900 tracking-wider uppercase block mb-1">HALO,</span>
                 <h4 class="text-xl font-black text-slate-900" id="portal-cand-name">{{ $candidate?->nama ?? 'Kandidat' }}</h4>
                 <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-                    Terima kasih atas lamaran Anda di <strong class="text-slate-900">Nanggala Kencana Rekatama Indonesia</strong> untuk posisi <strong class="text-slate-900" id="portal-cand-posisi">{{ $candidate?->posisi ?? 'Posisi Lamaran' }}</strong>. Tim HR kami mengundang Anda untuk mengikuti tahapan wawancara.
+                    Kami mengundang Anda mengikuti wawancara posisi <strong class="text-slate-900" id="portal-cand-posisi">{{ $candidate?->posisi ?? 'Posisi Lamaran' }}</strong>.
                 </p>
             </div>
 
@@ -77,11 +77,11 @@
                 </div>
             </div>
 
-            <!-- Batas Waktu Warning (Font Hitam) -->
-            <div class="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 space-y-1">
-                <div class="font-bold text-slate-900">Batas Waktu Konfirmasi:</div>
-                <p class="text-slate-700 leading-normal text-[11px]">
-                    Mohon konfirmasi paling lambat <strong class="text-slate-900" id="portal-deadline">{{ $interview?->batas_respon ? $interview->batas_respon->translatedFormat('l, d M Y, H:i') . ' WIB' : '24 jam sebelum jadwal' }}</strong>. Permohonan reschedule hanya diperkenankan <strong>maksimal 1 (satu) kali</strong>.
+            <!-- Batas Waktu Warning -->
+            <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-800 space-y-0.5">
+                <span class="font-bold block">Batas Konfirmasi:</span>
+                <p class="text-slate-600 text-[11px]">
+                    Sebelum <strong class="text-slate-900" id="portal-deadline">{{ $interview?->batas_respon ? $interview->batas_respon->translatedFormat('d M Y, H:i') . ' WIB' : '24 jam sebelum jadwal' }}</strong>. Reschedule maks. 1x.
                 </p>
             </div>
 
@@ -102,18 +102,6 @@
         </div>
     </div>
 
-                <button onclick="showRescheduleCard()" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold rounded-xl text-xs transition shadow-2xs">
-                    Ajukan Reschedule
-                </button>
-
-                <button onclick="showDeclineCard()" class="w-full py-2 px-4 text-slate-400 hover:text-red-600 font-semibold rounded-xl text-xs transition">
-                    Tolak Undangan
-                </button>
-            </div>
-        </div>
-    </div>
-
-
     <!-- ======================================================== -->
     <!-- CARD 2: DEDICATED RESCHEDULE CARD (KUOTA STRICT 1x) -->
     <!-- ======================================================== -->
@@ -121,7 +109,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-red-100">
             <div>
                 <h3 class="text-sm font-bold text-slate-900">Ajukan Reschedule</h3>
-                <p class="text-[11px] text-slate-400">Permohonan penjadwalan ulang wawancara Nanggala Kencana Rekatama Indonesia</p>
+                <p class="text-[11px] text-slate-400">Pilih opsi waktu pengganti.</p>
             </div>
             <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded border border-red-200">
                 Kuota: {{ ($interview?->jumlah_reschedule ?? 0) >= 1 ? 'Habis (1/1)' : 'Tersedia 1x' }}

@@ -10,30 +10,27 @@
         <div>
             <div class="flex items-center gap-2">
                 <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-red-600 text-white tracking-wider uppercase">Super Admin</span>
-                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Pengaturan Default & Master Sistem</h2>
+                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Pengaturan Sistem</h2>
             </div>
-            <p class="text-xs text-slate-500 mt-0.5">Kelola konfigurasi default jadwal, master template pesan email, dan audit log aktivitas.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Konfigurasi nilai bawaan sistem, master template email, dan log audit.</p>
         </div>
         <div class="flex items-center gap-2">
             <a href="{{ url('/dashboard') }}" class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-slate-700 text-xs font-bold rounded-xl transition shadow-2xs">
-                &larr; Buka Panel HR
+                &larr; Panel HR
             </a>
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
-                Sistem Aktif
-            </span>
         </div>
     </div>
 
     <!-- Main Navigation Tabs -->
     <div class="flex items-center gap-2 border-b border-slate-200 text-xs font-bold pb-2 overflow-x-auto">
         <button id="admin-tab-btn-settings" onclick="switchAdminTab('settings')" class="px-4 py-2 rounded-xl bg-red-600 text-white shadow-xs transition">
-            1. Parameter Default Jadwal
+            Parameter Default
         </button>
         <button id="admin-tab-btn-templates" onclick="switchAdminTab('templates')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-700 transition">
-            2. Master Template Email
+            Template Email
         </button>
         <button id="admin-tab-btn-logs" onclick="switchAdminTab('logs')" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-700 transition">
-            3. Audit Log Sistem
+            Log Audit
         </button>
     </div>
 
@@ -44,15 +41,15 @@
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
                 <div>
-                    <h3 class="font-bold text-slate-900 text-sm">Konfigurasi Nilai Bawaan (Default System Parameters)</h3>
-                    <p class="text-xs text-slate-500">Nilai default ini otomatis terisi di form pembuatan jadwal baru pada Panel HR.</p>
+                    <h3 class="font-bold text-slate-900 text-sm">Parameter Default Sistem</h3>
+                    <p class="text-xs text-slate-500">Nilai bawaan saat membuat jadwal wawancara baru.</p>
                 </div>
                 <div class="flex gap-2">
                     <button type="button" onclick="resetDefaultSettings()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
-                        Reset Standar
+                        Reset
                     </button>
                     <button type="button" onclick="saveDefaultSettings()" id="btn-save-settings" class="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
-                        Simpan Pengaturan
+                        Simpan
                     </button>
                 </div>
             </div>
@@ -60,58 +57,50 @@
             <form id="form-admin-settings" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-xs">
                 <!-- Pewawancara Default -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Nama Pewawancara Default</label>
-                    <input type="text" id="setting-default_interviewer" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Contoh: Tim HR Nanggala Kencana Rekatama Indonesia">
-                    <span class="text-[11px] text-slate-400">Otomatis mengisi kolom Pewawancara di form HR.</span>
+                    <label class="block font-bold text-slate-800">Pewawancara Default</label>
+                    <input type="text" id="setting-default_interviewer" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Tim HR Nanggala Kencana Rekatama Indonesia">
                 </div>
 
                 <!-- Durasi Default -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Durasi Sesi Wawancara (Menit)</label>
+                    <label class="block font-bold text-slate-800">Durasi (Menit)</label>
                     <input type="number" id="setting-default_duration" min="15" max="180" step="5" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="45">
-                    <span class="text-[11px] text-slate-400">Durasi estimasi per sesi wawancara.</span>
                 </div>
 
                 <!-- Google Meet Link Prefix -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Tautan Google Meet Default (Online)</label>
+                    <label class="block font-bold text-slate-800">Link Google Meet Default (Online)</label>
                     <input type="url" id="setting-default_meet_prefix" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="https://meet.google.com/nkri-interview">
-                    <span class="text-[11px] text-slate-400">Prefix link Google Meet otomatis untuk wawancara online.</span>
                 </div>
 
                 <!-- Lokasi Offline Default -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Alamat Kantor & Ruangan Default (Offline)</label>
-                    <input type="text" id="setting-default_location" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Gedung Menara Rekatama Lt. 8, Jl. Jend. Sudirman Kav. 50, Jakarta">
-                    <span class="text-[11px] text-slate-400">Lokasi tatap muka default jika kategori wawancara offline dipilih.</span>
+                    <label class="block font-bold text-slate-800">Lokasi Kantor Default (Offline)</label>
+                    <input type="text" id="setting-default_location" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta">
                 </div>
 
                 <!-- Batas Respon Default -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Batas Waktu Respon Konfirmasi (Jam sebelum Jadwal)</label>
+                    <label class="block font-bold text-slate-800">Batas Waktu Respon (Jam sebelum Jadwal)</label>
                     <input type="number" id="setting-default_deadline_hours" min="1" max="168" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="24">
-                    <span class="text-[11px] text-slate-400">Deadline kandidat untuk submit konfirmasi atau ajukan reschedule.</span>
                 </div>
 
                 <!-- Kuota Maksimal Reschedule -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Kuota Maksimal Reschedule per Kandidat (Aturan BR-06)</label>
+                    <label class="block font-bold text-slate-800">Maksimal Reschedule (Kuota)</label>
                     <input type="number" id="setting-default_max_reschedule" min="1" max="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="1">
-                    <span class="text-[11px] text-slate-400">Sesuai PRD, kandidat dibatasi maksimal 1 kali permintaan reschedule.</span>
                 </div>
 
                 <!-- Nama Perusahaan -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Nama Resmi Perusahaan (Branding)</label>
+                    <label class="block font-bold text-slate-800">Nama Perusahaan</label>
                     <input type="text" id="setting-company_name" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="Nanggala Kencana Rekatama Indonesia">
-                    <span class="text-[11px] text-slate-400">Digunakan pada header email, notifikasi, dan portal.</span>
                 </div>
 
                 <!-- Email Resmi HR -->
                 <div class="space-y-1">
-                    <label class="block font-bold text-slate-800">Email Resmi Rekrutmen / HR</label>
+                    <label class="block font-bold text-slate-800">Email Resmi HR</label>
                     <input type="email" id="setting-company_email" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500" placeholder="hr@nkri.co.id">
-                    <span class="text-[11px] text-slate-400">Alamat kontak pengirim resmi surat undangan.</span>
                 </div>
             </form>
         </div>
@@ -123,26 +112,26 @@
     <div id="section-templates" class="hidden space-y-6">
         <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-6">
             <div>
-                <h3 class="font-bold text-slate-900 text-sm">Master Template Pesan Email (PRD FR-19 s/d FR-24)</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Edit susunan draft email resmi yang dipakai otomatis oleh sistem dan tim HR.</p>
+                <h3 class="font-bold text-slate-900 text-sm">Master Template Email</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Edit susunan draf email resmi sistem.</p>
             </div>
 
-            <!-- Template Type Selector Pills (PRD v1.1 FR-20 s/d FR-23) -->
+            <!-- Template Type Selector Pills -->
             <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs overflow-x-auto">
-                <button type="button" id="tab-tmpl-invitation" onclick="selectAdminTemplate('invitation')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg bg-red-600 text-white font-bold transition">
-                    1. Undangan Awal
+                <button type="button" id="tab-tmpl-invitation" onclick="selectAdminTemplate('invitation')" class="flex-1 min-w-[120px] py-2 px-3 rounded-lg bg-red-600 text-white font-bold transition">
+                    Undangan Awal
                 </button>
-                <button type="button" id="tab-tmpl-reminder_online" onclick="selectAdminTemplate('reminder_online')" class="flex-1 min-w-[170px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    2. Pengingat Hari H Online
+                <button type="button" id="tab-tmpl-reminder_online" onclick="selectAdminTemplate('reminder_online')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
+                    Hari H Online
                 </button>
-                <button type="button" id="tab-tmpl-reminder_offline" onclick="selectAdminTemplate('reminder_offline')" class="flex-1 min-w-[170px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    3. Pengingat Hari H Offline
+                <button type="button" id="tab-tmpl-reminder_offline" onclick="selectAdminTemplate('reminder_offline')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
+                    Hari H Offline
                 </button>
             </div>
 
             <!-- Template Variables Quick Bar -->
             <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-1.5">
-                <span class="text-[11px] font-bold text-slate-700 block">Klik Variabel Dinamis untuk Menyisipkan ke Editor:</span>
+                <span class="text-[11px] font-bold text-slate-700 block">Variabel:</span>
                 <div class="flex flex-wrap gap-1.5">
                     <button type="button" onclick="insertVariable('{nama_kandidat}')" class="px-2 py-0.5 bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 rounded text-[11px] font-mono font-semibold transition">{nama_kandidat}</button>
                     <button type="button" onclick="insertVariable('{posisi}')" class="px-2 py-0.5 bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 rounded text-[11px] font-mono font-semibold transition">{posisi}</button>

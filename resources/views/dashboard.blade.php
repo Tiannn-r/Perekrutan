@@ -9,26 +9,23 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h2 class="text-xl font-bold text-slate-900 tracking-tight">Jadwal Wawancara</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Kelola konfirmasi kehadiran dan jadwal wawancara kandidat Nanggala Kencana Rekatama Indonesia.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Kelola jadwal dan konfirmasi kehadiran kandidat.</p>
         </div>
         <div class="flex items-center gap-2">
             <button onclick="openTemplateManagerModal()" class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-slate-700 text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5">
-                Template Pesan
+                Template Email
             </button>
-            <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
-                Database Terhubung
-            </span>
-            <button onclick="loadDashboardData()" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-slate-700 text-xs font-bold rounded-xl transition shadow-2xs">
+            <button onclick="loadDashboardData()" class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-slate-700 text-xs font-bold rounded-xl transition shadow-2xs">
                 Refresh
             </button>
         </div>
     </div>
 
-    <!-- 5 Clean Metric Cards (Merah Putih Clean Theme) -->
+    <!-- 5 Metric Cards -->
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         <!-- Total Pelamar -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs cursor-pointer hover:border-red-300 transition" onclick="setFilter('all')">
-            <span class="text-xs font-semibold text-slate-400 block">Total Pelamar</span>
+            <span class="text-xs font-semibold text-slate-400 block">Total</span>
             <span class="text-2xl font-black text-slate-900 mt-1 block" id="metric-total">-</span>
         </div>
 
@@ -40,16 +37,13 @@
 
         <!-- Menunggu Respon -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs cursor-pointer hover:border-red-300 transition" onclick="setFilter('invited')">
-            <span class="text-xs font-semibold text-slate-400 block">Menunggu Respon</span>
+            <span class="text-xs font-semibold text-slate-400 block">Menunggu</span>
             <span class="text-2xl font-black text-red-600 mt-1 block" id="metric-menunggu-respon">-</span>
         </div>
 
         <!-- Reschedule Diminta -->
         <div class="bg-red-50/40 p-4 rounded-xl border border-red-200 shadow-xs cursor-pointer hover:border-red-400 transition" onclick="setFilter('reschedule')">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-red-900">Reschedule</span>
-                <span class="text-[10px] font-bold bg-red-100 text-red-800 px-1.5 py-0.5 rounded border border-red-200">Perlu Aksi</span>
-            </div>
+            <span class="text-xs font-bold text-red-900 block">Reschedule</span>
             <span class="text-2xl font-black text-red-700 mt-1 block" id="metric-reschedule">-</span>
         </div>
 
@@ -163,23 +157,20 @@
             </div>
 
             <!-- Info Online: Link Meet Dikirim Saat Hari H -->
-            <div id="sched-field-online" class="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-1">
-                <span class="font-bold text-red-900 text-xs block">💡 Wawancara Online (Google Meet)</span>
-                <p class="text-[11px] text-slate-600 leading-relaxed">
-                    Tautan Google Meet <strong>tidak dimasukkan saat ini</strong>. Link rapat akan dikirimkan oleh HR kepada kandidat melalui email pengingat pada <strong>Hari H</strong> wawancara.
-                </p>
+            <div id="sched-field-online" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600">
+                Tautan Google Meet dikirim saat <strong>Hari H</strong>.
             </div>
 
             <!-- Input Offline: Lokasi Kantor -->
             <div id="sched-field-offline" class="hidden">
-                <label class="block font-semibold text-slate-600 mb-1">Lokasi & Ruangan Pertemuan</label>
-                <textarea id="sched-location" rows="2" placeholder="Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta</textarea>
+                <label class="block font-semibold text-slate-600 mb-1">Lokasi Kantor</label>
+                <textarea id="sched-location" rows="2" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta</textarea>
             </div>
 
             <div class="px-0 pt-2 flex justify-end gap-2 text-xs font-bold">
                 <button type="button" onclick="closeModal('modal-schedule')" class="px-3 py-1.5 text-slate-500 hover:text-slate-800">Batal</button>
                 <button type="submit" id="btn-submit-schedule" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-xs transition">
-                    Kirim Undangan
+                    Jadwalkan
                 </button>
             </div>
         </form>
@@ -192,7 +183,7 @@
 <div id="modal-reschedule" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full border border-red-300 shadow-2xl overflow-hidden">
         <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
-            <h3 class="font-bold text-xs tracking-wide">Tinjau Permohonan Reschedule</h3>
+            <h3 class="font-bold text-xs tracking-wide">Tinjau Reschedule</h3>
             <button onclick="closeModal('modal-reschedule')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
         </div>
 
@@ -206,15 +197,15 @@
 
             <!-- Alasan dari kandidat -->
             <div class="p-3 rounded-lg bg-red-50/60 border border-red-200 space-y-1">
-                <span class="font-bold text-red-900 text-[11px] block">Alasan Kandidat:</span>
+                <span class="font-bold text-red-900 text-[11px] block">Alasan:</span>
                 <p class="text-slate-700 text-xs" id="resched-alasan">-</p>
                 <div class="pt-1 text-[11px] text-red-800">
-                    Saran waktu: <strong id="resched-saran">-</strong>
+                    Saran: <strong id="resched-saran">-</strong>
                 </div>
             </div>
 
             <div class="space-y-1 pt-1">
-                <span class="font-bold text-slate-700 block">Tentukan Jadwal Baru:</span>
+                <span class="font-bold text-slate-700 block">Jadwal Baru:</span>
                 <div class="grid grid-cols-2 gap-2">
                     <input type="date" id="resched-new-date" required class="p-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500">
                     <input type="time" id="resched-new-time" required value="14:00" class="p-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500">
@@ -236,11 +227,8 @@
                 </div>
             </div>
 
-            <div id="resched-field-online" class="p-3 bg-red-50/70 border border-red-200 rounded-xl space-y-1">
-                <span class="font-bold text-red-900 text-xs block">💡 Wawancara Online (Google Meet)</span>
-                <p class="text-[11px] text-slate-600 leading-relaxed">
-                    Tautan Google Meet baru <strong>tidak dimasukkan saat ini</strong>. Tautan ruang rapat akan dikirimkan kepada kandidat pada email pengingat <strong>Hari H</strong>.
-                </p>
+            <div id="resched-field-online" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600">
+                Tautan Google Meet baru dikirim saat <strong>Hari H</strong>.
             </div>
 
             <div id="resched-field-offline" class="hidden">
@@ -251,7 +239,7 @@
             <div class="px-0 pt-2 flex justify-end gap-2 text-xs font-bold">
                 <button type="button" onclick="closeModal('modal-reschedule')" class="px-3 py-1.5 text-slate-500 hover:text-slate-800">Batal</button>
                 <button type="submit" id="btn-submit-resched" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-xs transition">
-                    Konfirmasi Jadwal Baru
+                    Setujui Jadwal
                 </button>
             </div>
         </form>
@@ -267,7 +255,7 @@
         <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <img src="{{ asset('images/nkri-icon.png') }}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain" alt="NKRI">
-                <h3 class="font-bold text-xs tracking-wide">Detail Wawancara Kandidat</h3>
+                <h3 class="font-bold text-xs tracking-wide">Detail Wawancara</h3>
             </div>
             <button onclick="closeModal('modal-candidate-detail')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
         </div>
@@ -326,12 +314,12 @@
                 </div>
             </div>
 
-            <!-- Action Pengingat Wawancara Hari H (Sesuai PRD v1.1 - Desain Panjang / Full Width) -->
+            <!-- Action Pengingat Wawancara Hari H -->
             <div id="detail-reminder-section" class="hidden p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 w-full">
                 <div class="flex items-center justify-between pb-2 border-b border-slate-200">
                     <div>
-                        <span class="font-bold text-slate-900 text-xs">Tugas Pengingat Wawancara (HR)</span>
-                        <p class="text-[11px] text-slate-500">Kirim satu pesan pengingat resmi pada Hari H kepada kandidat yang sudah terkonfirmasi</p>
+                        <span class="font-bold text-slate-900 text-xs">Pengingat Hari H</span>
+                        <p class="text-[11px] text-slate-500">Kirim tautan meeting dan panduan ke kandidat terkonfirmasi.</p>
                     </div>
                     <span id="detail-reminder-status-badge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Belum Dikirim</span>
                 </div>
@@ -340,16 +328,16 @@
                 <div class="p-4 bg-white rounded-xl border border-slate-200 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="space-y-1.5 flex-1">
                         <div class="flex items-center gap-2">
-                            <span class="font-bold text-slate-900 text-xs" id="detail-reminder-mode-title">Pengingat Hari H (Online)</span>
+                            <span class="font-bold text-slate-900 text-xs" id="detail-reminder-mode-title">Hari H (Online)</span>
                             <span class="text-[10px] text-slate-400 font-mono" id="detail-reminder-sent-time">-</span>
                         </div>
                         <p class="text-[11px] text-slate-600 leading-relaxed" id="detail-reminder-mode-desc">
-                            Tautan Google Meet, persiapan teknis (kamera, mic, koneksi, dokumen digital), dresscode, dan ajakan bergabung tepat waktu.
+                            Tautan meeting, teknis kamera/mic, koneksi, dan dresscode.
                         </p>
                     </div>
                     <div class="sm:self-center shrink-0">
                         <button id="btn-trigger-reminder" onclick="openReminderModalFromDetail()" class="w-full sm:w-auto py-2.5 px-5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center justify-center gap-1.5 whitespace-nowrap">
-                            Kirim Pengingat Hari H
+                            Kirim Pengingat
                         </button>
                     </div>
                 </div>
@@ -373,10 +361,7 @@
         <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <img src="{{ asset('images/nkri-icon.png') }}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain" alt="Logo">
-                <div>
-                    <h3 class="font-bold text-xs tracking-wide" id="modal-reminder-title">Kirim Pengingat Hari H</h3>
-                    <p class="text-[10px] text-red-100" id="modal-reminder-subtitle">Email pengingat resmi Hari H ke inbox kandidat</p>
-                </div>
+                <h3 class="font-bold text-xs tracking-wide" id="modal-reminder-title">Kirim Pengingat Hari H</h3>
             </div>
             <button onclick="closeModal('modal-reminder')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
         </div>
@@ -386,12 +371,12 @@
             <input type="hidden" id="reminder-jenis" value="hari_h">
 
             <!-- Candidate Summary & Target Email -->
-            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                     <h4 class="font-bold text-slate-900 text-sm" id="reminder-cand-name">-</h4>
                     <p class="text-slate-500 text-xs" id="reminder-cand-posisi">-</p>
                     <div class="text-[11px] text-slate-500 mt-1">
-                        Kirim ke email: <strong class="text-slate-900 font-mono" id="reminder-cand-email">-</strong>
+                        Email: <strong class="text-slate-900 font-mono" id="reminder-cand-email">-</strong>
                     </div>
                 </div>
                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-900 text-white self-start sm:self-center" id="reminder-kategori-badge">Online</span>
@@ -415,7 +400,7 @@
 
             <!-- Subjek Email Pengingat -->
             <div>
-                <label class="block font-bold text-slate-800 mb-1">Subjek Email</label>
+                <label class="block font-bold text-slate-800 mb-1">Subjek</label>
                 <input type="text" id="reminder-email-subject" oninput="updateReminderPreviews()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
             </div>
 
@@ -427,12 +412,12 @@
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-800 mb-1">Instruksi Kesiapan Wawancara Online</label>
-                    <textarea id="reminder-online-prep" oninput="updateReminderPreviews()" rows="4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
+                    <label class="block font-bold text-slate-800 mb-1">Petunjuk Persiapan</label>
+                    <textarea id="reminder-online-prep" oninput="updateReminderPreviews()" rows="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-800 mb-1">Ketentuan Pakaian (Dresscode)</label>
+                    <label class="block font-bold text-slate-800 mb-1">Dresscode</label>
                     <input type="text" id="reminder-online-dress" oninput="updateReminderPreviews()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
                 </div>
             </div>
@@ -440,36 +425,30 @@
             <!-- Offline Checklist Section (Muncul jika kategori Offline) -->
             <div id="reminder-fields-offline" class="hidden space-y-3">
                 <div>
-                    <label class="block font-bold text-slate-800 mb-1">Lokasi Pertemuan & Ruangan Kantor</label>
+                    <label class="block font-bold text-slate-800 mb-1">Lokasi Kantor</label>
                     <textarea id="reminder-offline-location" oninput="updateReminderPreviews()" rows="2" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-800 mb-1">Dokumen & Perlengkapan yang Wajib Dibawa</label>
-                    <textarea id="reminder-offline-prep" oninput="updateReminderPreviews()" rows="4" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
+                    <label class="block font-bold text-slate-800 mb-1">Dokumen Persyaratan</label>
+                    <textarea id="reminder-offline-prep" oninput="updateReminderPreviews()" rows="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
                 </div>
 
                 <div>
-                    <label class="block font-bold text-slate-800 mb-1">Ketentuan Pakaian (Dresscode)</label>
+                    <label class="block font-bold text-slate-800 mb-1">Dresscode</label>
                     <input type="text" id="reminder-offline-dress" oninput="updateReminderPreviews()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
                 </div>
             </div>
 
             <!-- Pesan Tambahan Opsional -->
             <div>
-                <label class="block font-bold text-slate-800 mb-1">Catatan Tambahan (Opsional)</label>
-                <input type="text" id="reminder-extra-notes" oninput="updateReminderPreviews()" placeholder="Contoh: Konfirmasikan jika memerlukan bantuan petunjuk jalan." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
+                <label class="block font-bold text-slate-800 mb-1">Catatan (Opsional)</label>
+                <input type="text" id="reminder-extra-notes" oninput="updateReminderPreviews()" placeholder="Catatan tambahan bila ada" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
             </div>
 
             <!-- Preview Email Siap Kirim -->
             <div class="border border-slate-200 rounded-xl p-3 bg-slate-50 space-y-2">
-                <div class="flex items-center justify-between">
-                    <span class="font-bold text-slate-800 text-[11px]">Pratinjau Isi Email yang Diterima Kandidat:</span>
-                    <button type="button" onclick="openTemplateManagerModal()" class="text-[11px] text-red-600 hover:text-red-700 font-semibold underline">
-                        Edit Template Master
-                    </button>
-                </div>
-
+                <span class="font-bold text-slate-800 text-[11px] block">Pratinjau Email:</span>
                 <div id="prev-box-email" class="p-3 bg-white rounded-lg border border-slate-200 text-[11px] text-slate-700 leading-relaxed max-h-48 overflow-y-auto whitespace-pre-wrap select-all font-sans">
                     -
                 </div>
@@ -482,7 +461,7 @@
                 Batal
             </button>
             <button onclick="submitSendEmailReminder()" id="btn-submit-reminder" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl transition shadow-xs">
-                Kirim Pengingat Hari H
+                Kirim Email
             </button>
         </div>
     </div>
@@ -497,37 +476,34 @@
         <div class="px-5 py-3.5 bg-red-600 text-white flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <img src="{{ asset('images/nkri-icon.png') }}" class="w-5 h-5 bg-white rounded-full p-0.5 object-contain" alt="Logo">
-                <div>
-                    <h3 class="font-bold text-xs tracking-wide">Kelola Template Pesan Email</h3>
-                    <p class="text-[10px] text-red-100">Sesuaikan pesan email otomatis yang dikirim ke kandidat</p>
-                </div>
+                <h3 class="font-bold text-xs tracking-wide">Template Email</h3>
             </div>
             <button onclick="closeModal('modal-template-manager')" class="text-white hover:text-red-100 text-base font-bold">&times;</button>
         </div>
 
         <div class="p-5 space-y-4 text-xs overflow-y-auto flex-1">
-            <!-- Template Selector Tabs (Sesuai 5 Kategori PRD) -->
+            <!-- Template Selector Tabs -->
             <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold overflow-x-auto">
-                <button type="button" onclick="selectTemplateTab('reminder_online_prep')" id="tmpl-tab-reminder_online_prep" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg bg-red-600 text-white shadow-xs text-center transition">
-                    Persiapan Online
+                <button type="button" onclick="selectTemplateTab('reminder_online_prep')" id="tmpl-tab-reminder_online_prep" class="flex-1 min-w-[105px] py-1.5 px-2 rounded-lg bg-red-600 text-white shadow-xs text-center transition">
+                    Online (Persiapan)
                 </button>
-                <button type="button" onclick="selectTemplateTab('reminder_online_day')" id="tmpl-tab-reminder_online_day" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
-                    Hari H Online (Meet)
+                <button type="button" onclick="selectTemplateTab('reminder_online_day')" id="tmpl-tab-reminder_online_day" class="flex-1 min-w-[105px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Online (Hari H)
                 </button>
-                <button type="button" onclick="selectTemplateTab('reminder_offline_prep')" id="tmpl-tab-reminder_offline_prep" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
-                    Persiapan Offline
+                <button type="button" onclick="selectTemplateTab('reminder_offline_prep')" id="tmpl-tab-reminder_offline_prep" class="flex-1 min-w-[105px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Offline (Persiapan)
                 </button>
-                <button type="button" onclick="selectTemplateTab('reminder_offline_day')" id="tmpl-tab-reminder_offline_day" class="flex-1 min-w-[110px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
-                    Hari H Offline
+                <button type="button" onclick="selectTemplateTab('reminder_offline_day')" id="tmpl-tab-reminder_offline_day" class="flex-1 min-w-[105px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                    Offline (Hari H)
                 </button>
-                <button type="button" onclick="selectTemplateTab('invitation')" id="tmpl-tab-invitation" class="flex-1 min-w-[90px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
+                <button type="button" onclick="selectTemplateTab('invitation')" id="tmpl-tab-invitation" class="flex-1 min-w-[85px] py-1.5 px-2 rounded-lg text-slate-600 hover:text-slate-900 text-center transition">
                     Undangan
                 </button>
             </div>
 
             <!-- Dynamic Variables Helper Chips -->
             <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-1.5">
-                <span class="text-[11px] font-bold text-slate-700 block">Klik variabel untuk disisipkan ke template:</span>
+                <span class="text-[11px] font-bold text-slate-700 block">Variabel:</span>
                 <div class="flex flex-wrap gap-1.5" id="template-variable-chips">
                     <button type="button" onclick="insertVariableTag('{nama}')" class="px-2 py-0.5 bg-white border border-slate-200 hover:border-red-300 hover:text-red-600 rounded text-[11px] font-mono text-slate-700"><code>{nama}</code></button>
                     <button type="button" onclick="insertVariableTag('{posisi}')" class="px-2 py-0.5 bg-white border border-slate-200 hover:border-red-300 hover:text-red-600 rounded text-[11px] font-mono text-slate-700"><code>{posisi}</code></button>
@@ -544,17 +520,17 @@
             <!-- Form Edit Template -->
             <div class="space-y-3">
                 <div>
-                    <label class="block font-bold text-slate-800 mb-1">Subjek Email</label>
+                    <label class="block font-bold text-slate-800 mb-1">Subjek</label>
                     <input type="text" id="tmpl-input-subject" oninput="updateTemplatePreviewLive()" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="tmpl-prep-dress-row">
                     <div>
-                        <label class="block font-bold text-slate-800 mb-1">Petunjuk Persiapan Default</label>
+                        <label class="block font-bold text-slate-800 mb-1">Petunjuk Persiapan</label>
                         <textarea id="tmpl-input-prep" oninput="updateTemplatePreviewLive()" rows="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
                     </div>
                     <div>
-                        <label class="block font-bold text-slate-800 mb-1">Ketentuan Pakaian Default</label>
+                        <label class="block font-bold text-slate-800 mb-1">Dresscode</label>
                         <textarea id="tmpl-input-dress" oninput="updateTemplatePreviewLive()" rows="3" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
                     </div>
                 </div>
@@ -942,12 +918,12 @@
 
         const isOnline = interview.kategori === 'online';
         if (modeTitle) {
-            modeTitle.innerText = isOnline ? 'Pengingat Hari H (Online)' : 'Pengingat Hari H (Offline)';
+            modeTitle.innerText = isOnline ? 'Hari H (Online)' : 'Hari H (Offline)';
         }
         if (modeDesc) {
             modeDesc.innerText = isOnline
-                ? 'Memuat tautan Google Meet resmi, petunjuk kesiapan teknis (kamera, mic, koneksi, dokumen digital), dresscode, dan ajakan bergabung tepat waktu.'
-                : 'Memuat jam wawancara, alamat kantor & ruangan, berkas fisik yang wajib dibawa, dresscode, dan ajakan hadir ("Ditunggu kehadirannya").';
+                ? 'Tautan meeting, teknis kamera/mic, koneksi, dan dresscode.'
+                : 'Jam wawancara, alamat kantor/ruangan, berkas fisik, dan dresscode.';
         }
 
         const reminders = interview?.reminders || [];
@@ -961,15 +937,15 @@
             badge.innerText = `Terkirim (${timeStr})`;
             if (sentTimeEl) sentTimeEl.innerText = `Dikirim: ${timeStr}`;
             if (btnTrigger) {
-                btnTrigger.innerHTML = `<span>Kirim Ulang Pengingat Hari H</span>`;
+                btnTrigger.innerHTML = `<span>Kirim Ulang</span>`;
                 btnTrigger.className = 'w-full py-2 px-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg text-xs transition shadow-xs flex items-center justify-center gap-1.5';
             }
         } else {
             badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800';
             badge.innerText = 'Belum Dikirim';
-            if (sentTimeEl) sentTimeEl.innerText = 'Status: Siap Dikirim';
+            if (sentTimeEl) sentTimeEl.innerText = 'Siap Dikirim';
             if (btnTrigger) {
-                btnTrigger.innerHTML = `<span>Kirim Pengingat Hari H</span>`;
+                btnTrigger.innerHTML = `<span>Kirim Pengingat</span>`;
                 btnTrigger.className = 'w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-xs transition shadow-xs flex items-center justify-center gap-1.5';
             }
         }
@@ -1031,13 +1007,13 @@
                     kategoriBadge.innerText = 'Online';
                 }
                 if (kategoriTitle) {
-                    kategoriTitle.innerText = 'Wawancara Online (Google Meet)';
+                    kategoriTitle.innerText = 'Online (Google Meet)';
                 }
                 if (kategoriDesc) {
                     if (interview.link_meeting) {
                         kategoriDesc.innerHTML = `<span class="text-slate-600">Tautan: <a href="${escapeHtml(interview.link_meeting)}" target="_blank" class="text-red-600 underline font-semibold">${escapeHtml(interview.link_meeting)}</a></span>`;
                     } else {
-                        kategoriDesc.innerText = 'Tautan Google Meet resmi akan dikirimkan kepada kandidat pada pesan pengingat Hari H.';
+                        kategoriDesc.innerText = 'Tautan dikirim pada email pengingat Hari H.';
                     }
                 }
                 if (kategoriIconBox) {

@@ -77,16 +77,16 @@
             <!-- Global View Switcher -->
             <div class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
                 <a href="{{ url('/dashboard') }}" class="{{ request()->is('dashboard') || request()->is('/') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
-                    Panel HR
+                    HR Dashboard
                 </a>
                 <a href="{{ url('/admin') }}" class="{{ request()->is('admin*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
-                    Panel Super Admin
+                    Super Admin
                 </a>
                 <a href="{{ url('/portal/tok_demo_ahmad_fauzi') }}" class="{{ request()->is('portal*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
-                    Portal Pelamar (Demo)
+                    Portal Pelamar
                 </a>
                 <a href="{{ url('/email-preview') }}" class="{{ request()->is('email-preview*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
-                    Email Undangan
+                    Email Preview
                 </a>
             </div>
         </div>

@@ -7,9 +7,9 @@
 
     <!-- Information banner -->
     <div class="bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-xs">
-        <span class="text-slate-800 font-semibold">Ini adalah preview format email resmi Nanggala Kencana Rekatama Indonesia yang diterima kandidat di inbox mereka.</span>
-        <a href="{{ url('/portal/' . ($token ?? 'tok_demo_ahmad_fauzi')) }}" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-[11px] transition shadow-xs">
-            Buka Portal Terkait
+        <span class="text-slate-800 font-medium">Pratinjau email undangan wawancara kandidat.</span>
+        <a href="{{ url('/portal/' . ($token ?? 'tok_demo_ahmad_fauzi')) }}" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs transition shadow-xs">
+            Buka Portal
         </a>
     </div>
 
