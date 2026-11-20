@@ -290,19 +290,38 @@
             </div>
 
             <!-- Schedule & Interviewer -->
-            <div class="grid grid-cols-2 gap-2 text-xs">
-                <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-0.5">
-                    <span class="text-slate-400 text-[11px] block">Waktu Wawancara</span>
-                    <span class="font-bold text-slate-900" id="detail-schedule-time">-</span>
-                    <span class="text-[11px] text-slate-500 block" id="detail-schedule-duration">-</span>
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="p-3.5 bg-white border border-slate-200 rounded-xl space-y-1">
+                        <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">Waktu Wawancara</span>
+                        <span class="font-bold text-slate-900 block text-xs" id="detail-schedule-time">-</span>
+                        <span class="text-[11px] text-slate-500 block" id="detail-schedule-duration">-</span>
+                    </div>
+                    <div class="p-3.5 bg-white border border-slate-200 rounded-xl space-y-1">
+                        <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider block">Pewawancara</span>
+                        <span class="font-bold text-slate-900 block text-xs" id="detail-interviewer">-</span>
+                        <span class="text-[11px] text-slate-500 block" id="detail-tahap">Tahap 1</span>
+                    </div>
                 </div>
-                <div class="p-3 bg-white border border-slate-200 rounded-xl space-y-0.5">
-                    <span class="text-slate-400 text-[11px] block">Pewawancara</span>
-                    <span class="font-bold text-slate-900" id="detail-interviewer">-</span>
-                    <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[11px] text-slate-500" id="detail-tahap">Tahap 1</span>
-                        <span>•</span>
-                        <span id="detail-kategori-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">Online</span>
+
+                <!-- Kartu Khusus Metode / Kategori Pelaksanaan Wawancara (Rapi & Profesional) -->
+                <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-start sm:items-center justify-between gap-3 text-xs">
+                    <div class="flex items-start sm:items-center gap-3">
+                        <div id="detail-kategori-icon-box" class="w-9 h-9 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Metode Pelaksanaan</span>
+                                <span id="detail-kategori-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 border border-red-200">Online</span>
+                            </div>
+                            <span class="font-bold text-slate-900 text-xs block mt-0.5" id="detail-kategori-title">Wawancara Online (Google Meet)</span>
+                            <p class="text-[11px] text-slate-500 mt-0.5 leading-relaxed" id="detail-kategori-desc">
+                                Tautan Google Meet resmi akan dikirimkan kepada kandidat pada pesan pengingat Hari H.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1002,13 +1021,51 @@
             document.getElementById('detail-tahap').innerText = interview.tahap || 'Tahap 1';
 
             const kategoriBadge = document.getElementById('detail-kategori-badge');
-            if (kategoriBadge) {
-                if (interview.kategori === 'online') {
-                    kategoriBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800';
-                    kategoriBadge.innerText = 'Online (Meet)';
-                } else {
-                    kategoriBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-800';
-                    kategoriBadge.innerText = 'Offline (Kantor)';
+            const kategoriTitle = document.getElementById('detail-kategori-title');
+            const kategoriDesc = document.getElementById('detail-kategori-desc');
+            const kategoriIconBox = document.getElementById('detail-kategori-icon-box');
+
+            if (interview.kategori === 'online') {
+                if (kategoriBadge) {
+                    kategoriBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 border border-red-200';
+                    kategoriBadge.innerText = 'Online';
+                }
+                if (kategoriTitle) {
+                    kategoriTitle.innerText = 'Wawancara Online (Google Meet)';
+                }
+                if (kategoriDesc) {
+                    if (interview.link_meeting) {
+                        kategoriDesc.innerHTML = `<span class="text-slate-600">Tautan: <a href="${escapeHtml(interview.link_meeting)}" target="_blank" class="text-red-600 underline font-semibold">${escapeHtml(interview.link_meeting)}</a></span>`;
+                    } else {
+                        kategoriDesc.innerText = 'Tautan Google Meet resmi akan dikirimkan kepada kandidat pada pesan pengingat Hari H.';
+                    }
+                }
+                if (kategoriIconBox) {
+                    kategoriIconBox.className = 'w-9 h-9 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0';
+                    kategoriIconBox.innerHTML = `
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    `;
+                }
+            } else {
+                if (kategoriBadge) {
+                    kategoriBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-800 border border-slate-300';
+                    kategoriBadge.innerText = 'Offline';
+                }
+                if (kategoriTitle) {
+                    kategoriTitle.innerText = 'Wawancara Offline (Tatap Muka di Kantor)';
+                }
+                if (kategoriDesc) {
+                    kategoriDesc.innerText = `Lokasi: ${interview.lokasi || 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta'}`;
+                }
+                if (kategoriIconBox) {
+                    kategoriIconBox.className = 'w-9 h-9 rounded-xl bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 mt-0.5 sm:mt-0';
+                    kategoriIconBox.innerHTML = `
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    `;
                 }
             }
         }
