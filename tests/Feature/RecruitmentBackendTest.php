@@ -240,4 +240,44 @@ class RecruitmentBackendTest extends TestCase
             'aktor' => 'HR',
         ]);
     }
+
+    public function test_hr_can_manage_message_templates_in_admin_panel()
+    {
+        // 1. List templates
+        $listResponse = $this->getJson('/api/templates');
+        $listResponse->assertStatus(200)
+                     ->assertJson(['success' => true])
+                     ->assertJsonStructure(['data']);
+
+        // 2. Update online reminder template
+        $updatePayload = [
+            'subjek' => 'Pemberitahuan Wawancara Online: {posisi} - {nama}',
+            'isi_pesan' => 'Halo {nama}, ini adalah pesan kustom dari HR.',
+            'petunjuk_persiapan' => 'Koneksi internet minimal 10 Mbps.',
+            'ketentuan_pakaian' => 'Kemeja berkerah rapi.',
+        ];
+
+        $updateResponse = $this->putJson('/api/templates/reminder_online', $updatePayload);
+        $updateResponse->assertStatus(200)
+                       ->assertJson([
+                           'success' => true,
+                           'data' => [
+                               'key' => 'reminder_online',
+                               'subjek' => 'Pemberitahuan Wawancara Online: {posisi} - {nama}',
+                           ],
+                       ]);
+
+        // 3. Preview template
+        $previewResponse = $this->postJson('/api/templates/reminder_online/preview', [
+            'catatan' => 'Segera hadir tepat waktu',
+        ]);
+        $previewResponse->assertStatus(200)
+                        ->assertJson(['success' => true])
+                        ->assertJsonStructure(['preview' => ['subjek', 'isi_pesan']]);
+
+        // 4. Reset template to default
+        $resetResponse = $this->postJson('/api/templates/reminder_online/reset');
+        $resetResponse->assertStatus(200)
+                      ->assertJson(['success' => true]);
+    }
 }

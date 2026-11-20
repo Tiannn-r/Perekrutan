@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
 use App\Models\Interview;
+use App\Models\MessageTemplate;
 use App\Models\NotificationLog;
 use App\Models\RescheduleRequest;
 use App\Models\ResponseToken;
@@ -12,6 +13,7 @@ use App\Models\StatusLog;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -195,7 +197,9 @@ class InterviewController extends Controller
 
         $validator = Validator::make($request->all(), [
             'channel' => 'nullable|in:email,whatsapp,both',
-            'catatan_persiapan' => 'nullable|string|max:1000',
+            'subjek' => 'nullable|string|max:255',
+            'isi_pesan' => 'nullable|string',
+            'catatan_persiapan' => 'nullable|string|max:2000',
             'ketentuan_pakaian' => 'nullable|string|max:500',
             'pesan_tambahan' => 'nullable|string|max:1000',
         ]);
@@ -209,12 +213,51 @@ class InterviewController extends Controller
         }
 
         $channel = $request->input('channel', 'email');
+        $candidate = $interview->candidate;
+
+        // Resolve template & variables
+        $templateKey = 'reminder_' . ($interview->kategori ?: 'online');
+        $template = MessageTemplate::getByKey($templateKey);
+
+        $prepNotes = $request->input('catatan_persiapan', $template?->petunjuk_persiapan);
+        $dressNotes = $request->input('ketentuan_pakaian', $template?->ketentuan_pakaian);
+        $extraNotes = $request->input('pesan_tambahan', '');
+
+        $rendered = $template ? $template->render([
+            'nama' => $candidate->nama,
+            'posisi' => $candidate->posisi,
+            'jadwal' => $interview->tanggal_waktu ? $interview->tanggal_waktu->translatedFormat('l, d F Y, H:i') . ' WIB' : '-',
+            'pewawancara' => $interview->interviewer ?? 'Tim Rekrutmen',
+            'kategori' => $interview->kategori === 'offline' ? 'Offline (Tatap Muka)' : 'Online (Google Meet)',
+            'link_meeting' => $interview->link_meeting ?? 'https://meet.google.com/...',
+            'lokasi' => $interview->lokasi ?? 'Gedung Nanggala Kencana Rekatama Indonesia',
+            'persiapan' => $prepNotes,
+            'pakaian' => $dressNotes,
+            'catatan' => $extraNotes ? "Catatan Tambahan:\n" . $extraNotes : '',
+        ]) : [
+            'subjek' => "Pengingat Wawancara: {$candidate->posisi} - {$candidate->nama}",
+            'isi_pesan' => "Halo {$candidate->nama}, mengingatkan jadwal wawancara Anda.",
+        ];
+
+        $finalSubject = $request->input('subjek') ?: $rendered['subjek'];
+        $finalBody = $request->input('isi_pesan') ?: $rendered['isi_pesan'];
+
+        // Dispatch Email using Laravel Mail
+        try {
+            Mail::raw($finalBody, function ($m) use ($candidate, $finalSubject) {
+                $m->to($candidate->email, $candidate->nama)
+                  ->subject($finalSubject);
+            });
+        } catch (\Throwable $e) {
+            // Log mail sending failure if any
+            report($e);
+        }
 
         // Record notification log
         NotificationLog::create([
             'interview_id' => $interview->id,
-            'penerima' => $interview->candidate->email,
-            'tipe' => 'Pengingat Wawancara (' . ucfirst($channel) . ')',
+            'penerima' => $candidate->email,
+            'tipe' => 'Pengingat Wawancara (Email)',
             'status_kirim' => 'Sent',
         ]);
 
@@ -225,16 +268,16 @@ class InterviewController extends Controller
             'dari_status' => $interview->status,
             'ke_status' => $interview->status,
             'aktor' => 'HR',
-            'keterangan' => "Pengingat wawancara {$interview->kategori} dikirim via " . ucfirst($channel),
+            'keterangan' => "Email pengingat wawancara dikirim ke {$candidate->email}",
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Pengingat wawancara berhasil dikirim ke ' . $interview->candidate->nama,
+            'message' => 'Email pengingat wawancara berhasil dikirim ke ' . $candidate->nama . ' (' . $candidate->email . ')',
             'data' => [
-                'candidate' => $interview->candidate->nama,
-                'email' => $interview->candidate->email,
-                'telepon' => $interview->candidate->telepon,
+                'candidate' => $candidate->nama,
+                'email' => $candidate->email,
+                'subjek' => $finalSubject,
                 'kategori' => $interview->kategori,
                 'sent_at' => now()->translatedFormat('d F Y, H:i') . ' WIB',
             ],
