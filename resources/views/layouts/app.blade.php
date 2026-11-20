@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'NKRI - Sistem Konfirmasi Wawancara')</title>
+    <title>@yield('title', 'Nanggala Kencana Rekatama Indonesia - Sistem Konfirmasi Wawancara')</title>
     
     <!-- Favicon: Logo NKRI -->
     <link rel="icon" type="image/png" href="{{ asset('images/nkri-icon.png') }}">
@@ -66,9 +66,9 @@
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 group">
-                    <img src="{{ asset('images/nkri-logo.png') }}" alt="Logo NKRI" class="h-8 w-auto object-contain">
+                    <img src="{{ asset('images/nkri-logo.png') }}" alt="Logo" class="h-8 w-auto object-contain">
                     <div class="border-l border-slate-200 pl-3">
-                        <h1 class="text-sm font-extrabold text-slate-900 tracking-tight leading-tight">Sistem Rekrutmen</h1>
+                        <h1 class="text-sm font-extrabold text-slate-900 tracking-tight leading-tight">Nanggala Kencana Rekatama Indonesia</h1>
                         <p class="text-[11px] text-red-600 font-bold">Konfirmasi Jadwal Wawancara</p>
                     </div>
                 </a>

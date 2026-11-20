@@ -1,61 +1,63 @@
 @extends('layouts.app')
 
-@section('title', 'Undangan Wawancara NKRI - ' . ($candidate?->nama ?? 'Portal Kandidat'))
+@section('title', 'Undangan Wawancara - Nanggala Kencana Rekatama Indonesia')
 
 @section('content')
 <div class="max-w-md mx-auto px-4 py-8 space-y-4">
 
     <!-- Token Security Indicator Bar -->
-    <div class="px-3.5 py-2 bg-white border border-red-100 rounded-xl text-[11px] text-slate-500 font-mono flex items-center justify-between shadow-2xs">
+    <div class="px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-[11px] text-slate-500 font-mono flex items-center justify-between shadow-2xs">
         <span class="truncate max-w-[240px]">Tautan: {{ request()->url() }}</span>
-        <span class="font-bold px-2 py-0.5 rounded {{ ($responseToken && $responseToken->isValid()) ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-slate-200 text-slate-700' }}" id="token-status-pill">
+        <span class="font-bold px-2 py-0.5 rounded {{ ($responseToken && $responseToken->isValid()) ? 'bg-slate-100 text-slate-900' : 'bg-slate-200 text-slate-700' }}" id="token-status-pill">
             {{ ($responseToken && $responseToken->isValid()) ? 'Token Valid' : ($responseToken?->sudah_dipakai ? 'Token Terpakai' : 'Token Tidak Aktif') }}
         </span>
     </div>
 
     <!-- ======================================================== -->
-    <!-- CARD 1: DETAIL UNDANGAN UTAMA (MERAH PUTIH THEME) -->
+    <!-- CARD 1: DETAIL UNDANGAN UTAMA -->
     <!-- ======================================================== -->
-    <div id="card-invitation-main" class="bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden transition-all {{ ($responseToken && $responseToken->isValid()) ? '' : 'hidden' }}">
+    <div id="card-invitation-main" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-all {{ ($responseToken && $responseToken->isValid()) ? '' : 'hidden' }}">
         
-        <!-- Header Brand Banner (Merah Putih with Official NKRI Emblem) -->
+        <!-- Header Brand Banner -->
         <div class="bg-gradient-to-br from-red-600 to-red-700 text-white p-6 text-center space-y-2 border-b-4 border-red-800">
             <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto shadow-md p-1.5 border-2 border-white/80">
-                <img src="{{ asset('images/nkri-icon.png') }}" alt="Logo NKRI" class="w-full h-full object-contain">
+                <img src="{{ asset('images/nkri-icon.png') }}" alt="Logo" class="w-full h-full object-contain">
             </div>
-            <h3 class="font-black text-xl tracking-wider uppercase text-white mt-1">NKRI</h3>
+            <h3 class="font-black text-base sm:text-lg tracking-wide uppercase text-white mt-1 leading-snug">
+                Nanggala Kencana Rekatama Indonesia
+            </h3>
             <p class="text-xs text-red-100 font-medium tracking-wide">Undangan Resmi Wawancara Kerja</p>
         </div>
 
         <div class="p-6 space-y-5">
             <!-- Candidate Greeting -->
             <div>
-                <span class="text-[10px] font-extrabold text-red-600 tracking-wider uppercase block mb-1">HALO,</span>
+                <span class="text-[10px] font-extrabold text-slate-900 tracking-wider uppercase block mb-1">HALO,</span>
                 <h4 class="text-xl font-black text-slate-900" id="portal-cand-name">{{ $candidate?->nama ?? 'Kandidat' }}</h4>
-                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                    Terima kasih atas lamaran Anda di <strong class="text-slate-800">NKRI</strong> untuk posisi <strong class="text-slate-800" id="portal-cand-posisi">{{ $candidate?->posisi ?? 'Posisi Lamaran' }}</strong>. Tim HR kami mengundang Anda untuk mengikuti tahapan wawancara.
+                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Terima kasih atas lamaran Anda di <strong class="text-slate-900">Nanggala Kencana Rekatama Indonesia</strong> untuk posisi <strong class="text-slate-900" id="portal-cand-posisi">{{ $candidate?->posisi ?? 'Posisi Lamaran' }}</strong>. Tim HR kami mengundang Anda untuk mengikuti tahapan wawancara.
                 </p>
             </div>
 
-            <!-- Schedule Data Grid (High Legibility & Contrast) -->
+            <!-- Schedule Data Grid (Font Hitam, Tanpa Border Badge) -->
             <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-4 space-y-2.5 text-xs">
                 <div class="flex justify-between items-start gap-2 pb-2 border-b border-slate-200/60">
-                    <span class="text-slate-400">Jadwal:</span>
+                    <span class="text-slate-500">Jadwal:</span>
                     <span class="font-bold text-slate-900 text-right" id="portal-schedule-time">
                         {{ $interview?->tanggal_waktu ? $interview->tanggal_waktu->translatedFormat('l, d F Y, H:i') . ' WIB' : '-' }}
                     </span>
                 </div>
 
                 <div class="flex justify-between items-center gap-2 pb-2 border-b border-slate-200/60">
-                    <span class="text-slate-400">Kategori:</span>
-                    <span class="font-bold px-2 py-0.5 rounded text-[11px] {{ $interview?->kategori === 'online' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-slate-200 text-slate-800' }}" id="portal-kategori-text">
+                    <span class="text-slate-500">Kategori:</span>
+                    <span class="font-bold text-slate-900 text-right" id="portal-kategori-text">
                         {{ strtoupper($interview?->kategori ?? 'ONLINE') }}
                     </span>
                 </div>
 
                 <div class="flex justify-between items-start gap-2 pb-2 border-b border-slate-200/60">
-                    <span class="text-slate-400">{{ $interview?->kategori === 'online' ? 'Media Rapat:' : 'Lokasi Kantor:' }}</span>
-                    <span class="font-medium text-slate-800 text-right text-[11px]" id="portal-lokasi-text">
+                    <span class="text-slate-500">{{ $interview?->kategori === 'online' ? 'Media Rapat:' : 'Lokasi Kantor:' }}</span>
+                    <span class="font-bold text-slate-900 text-right text-[11px]" id="portal-lokasi-text">
                         @if($interview?->kategori === 'online')
                             Google Meet (Tautan aktif setelah konfirmasi hadir)
                         @else
@@ -65,21 +67,21 @@
                 </div>
 
                 <div class="flex justify-between items-center gap-2 pb-2 border-b border-slate-200/60">
-                    <span class="text-slate-400">Durasi:</span>
-                    <span class="font-medium text-slate-800">{{ $interview?->durasi_menit ?? 45 }} Menit</span>
+                    <span class="text-slate-500">Durasi:</span>
+                    <span class="font-bold text-slate-900">{{ $interview?->durasi_menit ?? 45 }} Menit</span>
                 </div>
 
                 <div class="flex justify-between items-center gap-2">
-                    <span class="text-slate-400">Pewawancara:</span>
-                    <span class="font-medium text-slate-800">{{ $interview?->interviewer ?? 'Tim Rekrutmen NKRI' }}</span>
+                    <span class="text-slate-500">Pewawancara:</span>
+                    <span class="font-bold text-slate-900">{{ $interview?->interviewer ?? 'Tim HR Nanggala Kencana Rekatama Indonesia' }}</span>
                 </div>
             </div>
 
-            <!-- Batas Waktu Warning -->
-            <div class="p-3 rounded-xl bg-red-50/70 border border-red-200 text-[11px] text-red-950 space-y-1">
-                <div class="font-bold text-red-900">Batas Waktu Konfirmasi:</div>
-                <p class="text-red-800 leading-normal">
-                    Mohon konfirmasi paling lambat <strong id="portal-deadline">{{ $interview?->batas_respon ? $interview->batas_respon->translatedFormat('l, d M Y, H:i') . ' WIB' : '24 jam sebelum jadwal' }}</strong>. Permohonan reschedule hanya diperkenankan <strong>maksimal 1 (satu) kali</strong>.
+            <!-- Batas Waktu Warning (Font Hitam) -->
+            <div class="p-3.5 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-900 space-y-1">
+                <div class="font-bold text-slate-900">Batas Waktu Konfirmasi:</div>
+                <p class="text-slate-700 leading-normal text-[11px]">
+                    Mohon konfirmasi paling lambat <strong class="text-slate-900" id="portal-deadline">{{ $interview?->batas_respon ? $interview->batas_respon->translatedFormat('l, d M Y, H:i') . ' WIB' : '24 jam sebelum jadwal' }}</strong>. Permohonan reschedule hanya diperkenankan <strong>maksimal 1 (satu) kali</strong>.
                 </p>
             </div>
 
@@ -88,6 +90,17 @@
                 <button onclick="submitResponse('confirm')" class="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-extrabold rounded-xl text-xs transition shadow-md shadow-red-500/20">
                     Konfirmasi Hadir
                 </button>
+
+                <button onclick="showRescheduleCard()" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 font-bold rounded-xl text-xs transition shadow-2xs">
+                    Ajukan Reschedule
+                </button>
+
+                <button onclick="showDeclineCard()" class="w-full py-2 px-4 text-slate-500 hover:text-red-600 font-semibold rounded-xl text-xs transition">
+                    Tolak Undangan
+                </button>
+            </div>
+        </div>
+    </div>
 
                 <button onclick="showRescheduleCard()" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold rounded-xl text-xs transition shadow-2xs">
                     Ajukan Reschedule
@@ -108,7 +121,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-red-100">
             <div>
                 <h3 class="text-sm font-bold text-slate-900">Ajukan Reschedule</h3>
-                <p class="text-[11px] text-slate-400">Permohonan penjadwalan ulang wawancara NKRI</p>
+                <p class="text-[11px] text-slate-400">Permohonan penjadwalan ulang wawancara Nanggala Kencana Rekatama Indonesia</p>
             </div>
             <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded border border-red-200">
                 Kuota: {{ ($interview?->jumlah_reschedule ?? 0) >= 1 ? 'Habis (1/1)' : 'Tersedia 1x' }}
@@ -141,7 +154,7 @@
                 <div>
                     <label class="block font-bold text-slate-700 mb-1">Saran Waktu Alternatif</label>
                     <input type="text" id="resched-suggested-time" placeholder="Contoh: Jumat, 27 Nov jam 14:00 WIB" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-red-500 text-xs">
-                    <span class="text-[10px] text-slate-400 block mt-1">Jadwal baru final akan disesuaikan oleh tim HR NKRI.</span>
+                    <span class="text-[10px] text-slate-400 block mt-1">Jadwal baru final akan disesuaikan oleh tim HR Nanggala Kencana Rekatama Indonesia.</span>
                 </div>
 
                 <div class="flex gap-2 pt-2">
@@ -165,7 +178,7 @@
             <span class="text-[10px] font-bold uppercase tracking-wider text-red-600 block mb-0.5">Verifikasi Penolakan</span>
             <h3 class="text-sm font-bold text-slate-900">Apakah Anda yakin menolak undangan ini?</h3>
             <p class="text-xs text-slate-500 mt-1">
-                Berikan alasannya. Keputusan penolakan ini bersifat <strong class="text-red-700">final</strong> dan membatalkan proses seleksi Anda di NKRI.
+                Berikan alasannya. Keputusan penolakan ini bersifat <strong class="text-red-700">final</strong> dan membatalkan proses seleksi Anda di Nanggala Kencana Rekatama Indonesia.
             </p>
         </div>
 
@@ -226,9 +239,9 @@
 
         <p id="result-desc" class="text-xs text-slate-500 leading-relaxed">
             @if($interview?->status === 'Confirmed')
-                Kami telah mengunci jadwal wawancara Anda di NKRI. Silakan catat jadwal dan bergabung tepat waktu sesuai petunjuk di bawah.
+                Kami telah mengunci jadwal wawancara Anda di Nanggala Kencana Rekatama Indonesia. Silakan catat jadwal dan bergabung tepat waktu sesuai petunjuk di bawah.
             @elseif($interview?->status === 'Reschedule Requested')
-                Tim HR NKRI akan meninjau ketersediaan jadwal pewawancara dan mengirimkan undangan baru ke email Anda.
+                Tim HR Nanggala Kencana Rekatama Indonesia akan meninjau ketersediaan jadwal pewawancara dan mengirimkan undangan baru ke email Anda.
             @elseif($interview?->status === 'Declined')
                 Terima kasih atas konfirmasi Anda. Data lamaran Anda telah diperbarui dan proses seleksi ditutup.
             @else
@@ -252,7 +265,7 @@
                 @else
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1.5">
                         <span class="text-[11px] font-bold text-slate-900 block">Lokasi Pertemuan Tatap Muka:</span>
-                        <p class="text-slate-700 text-xs">{{ $interview->lokasi ?? 'Gedung Pusat NKRI, Jakarta' }}</p>
+                        <p class="text-slate-700 text-xs">{{ $interview->lokasi ?? 'Gedung Kantor Nanggala Kencana Rekatama Indonesia' }}</p>
                         <span class="text-[10px] text-slate-400 block pt-1">Harap hadir 15 menit sebelum wawancara dimulai.</span>
                     </div>
                 @endif
@@ -361,14 +374,14 @@
                         `;
                     }
                 } else if (action === 'reschedule') {
-                    badgeContainer.innerHTML = '<span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300">Permohonan Reschedule Terkirim</span>';
-                    resultTitle.innerText = 'Permohonan Anda Sedang Ditinjau Tim HR NKRI';
+                    badgeContainer.innerHTML = '<span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-800 border border-slate-300">Permohonan Reschedule Terkirim</span>';
+                    resultTitle.innerText = 'Permohonan Anda Sedang Ditinjau Tim HR Nanggala Kencana Rekatama Indonesia';
                     resultDesc.innerText = 'Permohonan reschedule Anda telah diteruskan ke pewawancara. Jadwal pengganti akan kami kirimkan ke email Anda.';
                     resultExtra.innerHTML = '';
                 } else if (action === 'decline') {
                     badgeContainer.innerHTML = '<span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">Undangan Ditolak</span>';
                     resultTitle.innerText = 'Undangan Wawancara Resmi Ditolak';
-                    resultDesc.innerText = 'Terima kasih atas konfirmasi dan waktu Anda. Proses seleksi di NKRI telah ditutup.';
+                    resultDesc.innerText = 'Terima kasih atas konfirmasi dan waktu Anda. Proses seleksi di Nanggala Kencana Rekatama Indonesia telah ditutup.';
                     resultExtra.innerHTML = '';
                 }
 

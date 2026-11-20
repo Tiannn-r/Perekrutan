@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard HR - Sistem Rekrutmen NKRI')
+@section('title', 'Dashboard HR - Nanggala Kencana Rekatama Indonesia')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-6">
@@ -9,7 +9,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h2 class="text-xl font-bold text-slate-900 tracking-tight">Jadwal Wawancara</h2>
-            <p class="text-xs text-slate-400 mt-0.5">Kelola konfirmasi kehadiran dan jadwal wawancara kandidat NKRI.</p>
+            <p class="text-xs text-slate-500 mt-0.5">Kelola konfirmasi kehadiran dan jadwal wawancara kandidat Nanggala Kencana Rekatama Indonesia.</p>
         </div>
         <div class="flex items-center gap-2">
             <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-xs font-semibold border border-red-200">
@@ -132,7 +132,7 @@
             <div class="grid grid-cols-2 gap-2">
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">Pewawancara</label>
-                    <input type="text" id="sched-interviewer" required value="Tim HR NKRI" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500">
+                    <input type="text" id="sched-interviewer" required value="Tim HR Nanggala Kencana Rekatama Indonesia" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500">
                 </div>
                 <div>
                     <label class="block font-semibold text-slate-600 mb-1">Durasi</label>
@@ -168,7 +168,7 @@
             <!-- Input Offline: Lokasi Kantor -->
             <div id="sched-field-offline" class="hidden">
                 <label class="block font-semibold text-slate-600 mb-1">Lokasi & Ruangan Pertemuan</label>
-                <textarea id="sched-location" rows="2" placeholder="Gedung Pusat NKRI, Lantai 3 Ruang Wawancara, Jakarta" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Pusat NKRI, Lantai 3 Ruang Wawancara, Jakarta</textarea>
+                <textarea id="sched-location" rows="2" placeholder="Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta</textarea>
             </div>
 
             <div class="px-0 pt-2 flex justify-end gap-2 text-xs font-bold">
@@ -238,7 +238,7 @@
 
             <div id="resched-field-offline" class="hidden">
                 <label class="block font-semibold text-slate-600 mb-1">Lokasi Kantor</label>
-                <textarea id="resched-new-location" rows="2" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Pusat NKRI, Lantai 3 Ruang Wawancara, Jakarta</textarea>
+                <textarea id="resched-new-location" rows="2" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-1 focus:ring-red-500">Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta</textarea>
             </div>
 
             <div class="px-0 pt-2 flex justify-end gap-2 text-xs font-bold">
@@ -461,8 +461,8 @@
                 const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
                 
                 const kategoriBadge = latestInterview.kategori === 'online' 
-                    ? '<span class="text-[10px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded ml-1 border border-red-100">Online</span>'
-                    : '<span class="text-[10px] font-bold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded ml-1 border border-slate-200">Offline</span>';
+                    ? '<span class="text-[10px] font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded ml-1">Online</span>'
+                    : '<span class="text-[10px] font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded ml-1">Offline</span>';
 
                 if (c.status === 'Reschedule Requested' && reschedReq) {
                     scheduleText = `
@@ -716,7 +716,7 @@
             const formattedDate = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB';
             document.getElementById('detail-schedule-time').innerText = formattedDate;
             document.getElementById('detail-schedule-duration').innerText = `Durasi: ${interview.durasi_menit || 45} Menit`;
-            document.getElementById('detail-interviewer').innerText = interview.interviewer || 'Tim HR NKRI';
+            document.getElementById('detail-interviewer').innerText = interview.interviewer || 'Tim HR Nanggala Kencana Rekatama Indonesia';
             document.getElementById('detail-tahap').innerText = interview.tahap || 'Tahap 1';
 
             const onlineSection = document.getElementById('detail-section-online');
@@ -733,7 +733,7 @@
                 onlineSection.classList.add('hidden');
                 offlineSection.classList.remove('hidden');
 
-                document.getElementById('detail-location-text').innerText = interview.lokasi || 'Gedung Pusat NKRI, Lantai 3 Ruang Wawancara, Jakarta';
+                document.getElementById('detail-location-text').innerText = interview.lokasi || 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta';
             }
         }
 

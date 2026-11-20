@@ -17,7 +17,7 @@ class FrontendViewTest extends TestCase
         $response = $this->get('/dashboard');
         $response->assertStatus(200);
         $response->assertSee('Jadwal Wawancara');
-        $response->assertSee('NKRI');
+        $response->assertSee('Nanggala Kencana Rekatama Indonesia');
     }
 
     public function test_candidate_portal_page_loads_with_valid_token(): void
@@ -64,6 +64,6 @@ class FrontendViewTest extends TestCase
         $response = $this->get('/email-preview');
         $response->assertStatus(200);
         $response->assertSee('Preview Email Undangan');
-        $response->assertSee('NKRI');
+        $response->assertSee('Nanggala Kencana Rekatama Indonesia');
     }
 }

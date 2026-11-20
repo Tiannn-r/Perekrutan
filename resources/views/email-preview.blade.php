@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Preview Email Undangan - Sistem Rekrutmen NKRI')
+@section('title', 'Preview Email Undangan - Nanggala Kencana Rekatama Indonesia')
 
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8 space-y-4">
 
     <!-- Information banner -->
-    <div class="bg-red-50 border border-red-200 rounded-xl p-3 flex items-center justify-between text-xs">
-        <span class="text-red-900 font-semibold">Ini adalah preview format email resmi NKRI yang diterima kandidat di inbox mereka.</span>
+    <div class="bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-between text-xs">
+        <span class="text-slate-800 font-semibold">Ini adalah preview format email resmi Nanggala Kencana Rekatama Indonesia yang diterima kandidat di inbox mereka.</span>
         <a href="{{ url('/portal/' . ($token ?? 'tok_demo_ahmad_fauzi')) }}" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-[11px] transition shadow-xs">
             Buka Portal Terkait
         </a>
@@ -19,15 +19,15 @@
         <div class="bg-slate-50 border-b border-slate-200 p-4 text-xs space-y-1.5">
             <div class="flex items-center gap-2">
                 <span class="text-slate-400 font-semibold w-16">Subjek:</span>
-                <span class="font-bold text-slate-800">Undangan Wawancara Kerja: {{ $candidate?->posisi ?? 'Frontend Engineer' }} - {{ $candidate?->nama ?? 'Ahmad Fauzi' }} (NKRI)</span>
+                <span class="font-bold text-slate-900">Undangan Wawancara Kerja: {{ $candidate?->posisi ?? 'Frontend Engineer' }} - {{ $candidate?->nama ?? 'Ahmad Fauzi' }} (Nanggala Kencana Rekatama Indonesia)</span>
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-slate-400 font-semibold w-16">Dari:</span>
-                <span class="text-slate-600 font-medium">HR NKRI &lt;recruitment@nkri.id&gt;</span>
+                <span class="text-slate-700 font-medium">HR Nanggala Kencana Rekatama Indonesia &lt;recruitment@nkri.co.id&gt;</span>
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-slate-400 font-semibold w-16">Kepada:</span>
-                <span class="text-slate-600 font-medium">{{ $candidate?->nama ?? 'Ahmad Fauzi' }} &lt;{{ $candidate?->email ?? 'fauzi.ahmad@gmail.com' }}&gt;</span>
+                <span class="text-slate-700 font-medium">{{ $candidate?->nama ?? 'Ahmad Fauzi' }} &lt;{{ $candidate?->email ?? 'fauzi.ahmad@gmail.com' }}&gt;</span>
             </div>
         </div>
 
@@ -35,43 +35,45 @@
         <div class="p-6 text-xs text-slate-700 space-y-4 leading-relaxed">
             <!-- Brand Logo in Email Header -->
             <div class="pb-3 border-b border-slate-100 flex items-center justify-between">
-                <img src="{{ asset('images/nkri-logo.png') }}" alt="Logo NKRI" class="h-8 w-auto object-contain">
-                <span class="text-[11px] text-red-600 font-bold uppercase tracking-wider">Tim Rekrutmen</span>
+                <div class="flex items-center gap-2.5">
+                    <img src="{{ asset('images/nkri-logo.png') }}" alt="Logo" class="h-8 w-auto object-contain">
+                </div>
+                <span class="text-[11px] text-slate-600 font-bold uppercase tracking-wider">Tim Rekrutmen</span>
             </div>
 
             <p>Halo <strong>{{ $candidate?->nama ?? 'Ahmad Fauzi' }}</strong>,</p>
 
             <p>
-                Terima kasih atas minat dan lamaran Anda untuk posisi <strong>{{ $candidate?->posisi ?? 'Frontend Engineer' }}</strong> di <strong>NKRI</strong>. Berdasarkan hasil peninjauan awal berkas lamaran Anda, kami bermaksud mengundang Anda untuk mengikuti tahapan wawancara.
+                Terima kasih atas minat dan lamaran Anda untuk posisi <strong>{{ $candidate?->posisi ?? 'Frontend Engineer' }}</strong> di <strong>Nanggala Kencana Rekatama Indonesia</strong>. Berdasarkan hasil peninjauan awal berkas lamaran Anda, kami bermaksud mengundang Anda untuk mengikuti tahapan wawancara.
             </p>
 
-            <!-- Interview Detail Summary Box -->
-            <div class="bg-slate-50 border border-red-100 rounded-xl overflow-hidden my-3">
+            <!-- Interview Detail Summary Box (Font Hitam, Bersih) -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden my-3">
                 <table class="w-full text-xs">
-                    <tbody class="divide-y divide-slate-200/80">
+                    <tbody class="divide-y divide-slate-200">
                         <tr>
-                            <td class="p-3 text-slate-400 font-semibold w-1/3 bg-slate-100/50">Waktu Wawancara</td>
+                            <td class="p-3 text-slate-500 font-semibold w-1/3 bg-slate-100/60">Waktu Wawancara</td>
                             <td class="p-3 font-bold text-slate-900">
                                 {{ $interview?->tanggal_waktu ? $interview->tanggal_waktu->translatedFormat('l, d F Y, H:i') . ' WIB' : 'Jumat, 27 November 2026, 14:00 WIB' }}
                             </td>
                         </tr>
                         <tr>
-                            <td class="p-3 text-slate-400 font-semibold bg-slate-100/50">Pewawancara</td>
-                            <td class="p-3 font-bold text-slate-900">{{ $interview?->interviewer ?? 'Tim HR NKRI' }}</td>
+                            <td class="p-3 text-slate-500 font-semibold bg-slate-100/60">Pewawancara</td>
+                            <td class="p-3 font-bold text-slate-900">{{ $interview?->interviewer ?? 'Tim HR Nanggala Kencana Rekatama Indonesia' }}</td>
                         </tr>
                         <tr>
-                            <td class="p-3 text-slate-400 font-semibold bg-slate-100/50">Kategori & Media</td>
-                            <td class="p-3 font-bold text-red-600">
+                            <td class="p-3 text-slate-500 font-semibold bg-slate-100/60">Kategori & Media</td>
+                            <td class="p-3 font-bold text-slate-900">
                                 @if(($interview?->kategori ?? 'online') === 'online')
                                     Online (Google Meet)
                                 @else
-                                    Offline (Tatap Muka di Kantor NKRI)
+                                    Offline (Tatap Muka di Kantor)
                                 @endif
                             </td>
                         </tr>
                         <tr>
-                            <td class="p-3 text-slate-400 font-semibold bg-slate-100/50">Batas Konfirmasi</td>
-                            <td class="p-3 font-bold text-red-700">
+                            <td class="p-3 text-slate-500 font-semibold bg-slate-100/60">Batas Konfirmasi</td>
+                            <td class="p-3 font-bold text-slate-900">
                                 {{ $interview?->batas_respon ? $interview->batas_respon->translatedFormat('l, d M Y, H:i') . ' WIB' : '24 jam sebelum jadwal' }}
                             </td>
                         </tr>
@@ -79,7 +81,7 @@
                 </table>
             </div>
 
-            <p class="text-slate-500">
+            <p class="text-slate-600">
                 Untuk memastikan kelancaran jadwal, silakan konfirmasikan kehadiran Anda melalui tombol di bawah ini:
             </p>
 
@@ -101,7 +103,7 @@
             </div>
 
             <p class="text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-                Catatan: Permohonan jadwal ulang (reschedule) hanya dapat diajukan maksimal 1 (satu) kali. Jika ada kendala teknis, silakan hubungi <a href="mailto:recruitment@nkri.id" class="text-red-600 underline">recruitment@nkri.id</a>.
+                Catatan: Permohonan jadwal ulang (reschedule) hanya dapat diajukan maksimal 1 (satu) kali. Jika ada kendala teknis, silakan hubungi <a href="mailto:recruitment@nkri.co.id" class="text-slate-700 font-semibold underline">recruitment@nkri.co.id</a>.
             </p>
         </div>
     </div>
