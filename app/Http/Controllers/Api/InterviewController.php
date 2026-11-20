@@ -108,6 +108,31 @@ class InterviewController extends Controller
 
         $portalUrl = url("/portal/{$tokenString}");
 
+        // Auto-kirim email undangan secara otomatis menggunakan master template dari Admin
+        try {
+            $template = MessageTemplate::getByKey('invitation');
+            $rendered = $template->render([
+                'nama' => $candidate->nama,
+                'posisi' => $candidate->posisi,
+                'jadwal' => $scheduleDate->translatedFormat('l, d F Y, H:i') . ' WIB',
+                'pewawancara' => $interview->interviewer ?? 'Tim HR Nanggala Kencana Rekatama Indonesia',
+                'kategori' => $interview->kategori === 'offline' ? 'Offline (Tatap Muka di Kantor)' : 'Online (Google Meet)',
+                'lokasi' => $interview->lokasi ?? 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta',
+                'link_meeting' => 'Tautan Google Meet akan dikirimkan pada email Hari H',
+                'batas_konfirmasi' => $deadline->translatedFormat('l, d F Y, H:i') . ' WIB',
+                'portal_url' => $portalUrl,
+                'link_portal' => $portalUrl,
+                'deadline_konfirmasi' => $deadline->translatedFormat('l, d F Y, H:i') . ' WIB',
+            ]);
+
+            Mail::raw($rendered['isi_pesan'], function ($m) use ($candidate, $rendered) {
+                $m->to($candidate->email, $candidate->nama)
+                  ->subject($rendered['subjek']);
+            });
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Undangan wawancara berhasil dibuat dan dikirim',
@@ -189,10 +214,37 @@ class InterviewController extends Controller
             'status_kirim' => 'Sent',
         ]);
 
+        $newPortalUrl = url("/portal/{$newTokenString}");
+
+        // Auto-kirim email jadwal baru pengganti menggunakan master template dari Admin
+        try {
+            $template = MessageTemplate::getByKey('invitation');
+            $rendered = $template->render([
+                'nama' => $interview->candidate->nama,
+                'posisi' => $interview->candidate->posisi,
+                'jadwal' => $newDate->translatedFormat('l, d F Y, H:i') . ' WIB',
+                'pewawancara' => $interview->interviewer ?? 'Tim HR Nanggala Kencana Rekatama Indonesia',
+                'kategori' => $interview->kategori === 'offline' ? 'Offline (Tatap Muka di Kantor)' : 'Online (Google Meet)',
+                'lokasi' => $interview->lokasi ?? 'Gedung Kantor Nanggala Kencana Rekatama Indonesia, Jakarta',
+                'link_meeting' => 'Tautan Google Meet akan dikirimkan pada email Hari H',
+                'batas_konfirmasi' => $newDeadline->translatedFormat('l, d F Y, H:i') . ' WIB',
+                'portal_url' => $newPortalUrl,
+                'link_portal' => $newPortalUrl,
+                'deadline_konfirmasi' => $newDeadline->translatedFormat('l, d F Y, H:i') . ' WIB',
+            ]);
+
+            Mail::raw($rendered['isi_pesan'], function ($m) use ($interview, $rendered) {
+                $m->to($interview->candidate->email, $interview->candidate->nama)
+                  ->subject('[Jadwal Baru] ' . $rendered['subjek']);
+            });
+        } catch (\Throwable $e) {
+            report($e);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Jadwal pengganti berhasil ditetapkan dan undangan dikirim ulang',
-            'new_portal_url' => url("/portal/{$newTokenString}"),
+            'new_portal_url' => $newPortalUrl,
         ]);
     }
 

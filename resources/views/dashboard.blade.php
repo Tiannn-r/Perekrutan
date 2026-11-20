@@ -12,9 +12,6 @@
             <p class="text-xs text-slate-500 mt-0.5">Kelola jadwal dan konfirmasi kehadiran kandidat.</p>
         </div>
         <div class="flex items-center gap-2">
-            <button onclick="openTemplateManagerModal()" class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-slate-700 text-xs font-bold rounded-xl transition shadow-2xs flex items-center gap-1.5">
-                Template Email
-            </button>
             <button onclick="loadDashboardData()" class="px-3.5 py-1.5 bg-white border border-slate-200 hover:bg-red-50 hover:text-red-700 hover:border-red-200 text-slate-700 text-xs font-bold rounded-xl transition shadow-2xs">
                 Refresh
             </button>
@@ -825,12 +822,8 @@
             const data = await res.json();
             if (data.success) {
                 closeModal('modal-schedule');
-                showToast('Jadwal berhasil dibuat & undangan dikirim!');
+                showToast('Jadwal berhasil dibuat & email undangan terkirim ke kandidat!');
                 loadDashboardData();
-
-                if (data.token) {
-                    openPortalLinkModal(data.token);
-                }
             } else {
                 showToast(data.message || 'Gagal membuat jadwal', 'error');
             }
@@ -839,7 +832,7 @@
             showToast('Terjadi kesalahan koneksi', 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = 'Kirim Undangan';
+            submitBtn.innerText = 'Jadwalkan';
         }
     }
 
@@ -889,7 +882,7 @@
             const data = await res.json();
             if (data.success) {
                 closeModal('modal-reschedule');
-                showToast('Jadwal baru disetujui & token diperbarui!');
+                showToast('Jadwal baru disetujui & email undangan terkirim ke kandidat!');
                 loadDashboardData();
             } else {
                 showToast(data.message || 'Gagal memperbarui jadwal', 'error');
@@ -899,7 +892,7 @@
             showToast('Terjadi kesalahan koneksi', 'error');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = 'Konfirmasi Jadwal Baru';
+            submitBtn.innerText = 'Setujui Jadwal';
         }
     }
 
