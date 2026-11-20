@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'RecruitFlow - Sistem Konfirmasi Wawancara')</title>
+    <title>@yield('title', 'NKRI - Sistem Konfirmasi Wawancara')</title>
     
+    <!-- Favicon: Logo NKRI -->
+    <link rel="icon" type="image/png" href="{{ asset('images/nkri-icon.png') }}">
+
     <!-- Google Fonts: Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS (CDN for standalone & fast rendering) -->
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -22,11 +25,14 @@
                     },
                     colors: {
                         brand: {
-                            50: '#EEF2FF',
-                            100: '#E0E7FF',
-                            500: '#6366F1',
-                            600: '#4F46E5',
-                            700: '#4338CA',
+                            50: '#FEF2F2',
+                            100: '#FEE2E2',
+                            200: '#FECACA',
+                            500: '#EF4444',
+                            600: '#DC2626',
+                            700: '#B91C1C',
+                            800: '#991B1B',
+                            900: '#7F1D1D',
                         }
                     }
                 }
@@ -38,45 +44,45 @@
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         }
         .tab-nav-active {
-            background-color: #4F46E5;
+            background-color: #DC2626;
             color: #FFFFFF;
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);
         }
         .tab-nav-inactive {
             color: #64748B;
             background-color: transparent;
         }
         .tab-nav-inactive:hover {
-            background-color: #F1F5F9;
-            color: #0F172A;
+            background-color: #FEF2F2;
+            color: #DC2626;
         }
     </style>
     @stack('styles')
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
 
-    <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 lg:px-8 py-3">
+    <!-- Top Navigation Header (Merah Putih Clean Style) -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-red-100 shadow-xs px-4 lg:px-8 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <a href="{{ url('/dashboard') }}" class="flex items-center gap-2">
-                    <span class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-extrabold flex items-center justify-center text-sm shadow-xs">RF</span>
-                    <div>
-                        <h1 class="text-base font-extrabold text-slate-900 tracking-tight leading-tight">RecruitFlow</h1>
-                        <p class="text-[11px] text-slate-400">Konfirmasi Jadwal Wawancara</p>
+                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 group">
+                    <img src="{{ asset('images/nkri-logo.png') }}" alt="Logo NKRI" class="h-8 w-auto object-contain">
+                    <div class="border-l border-slate-200 pl-3">
+                        <h1 class="text-sm font-extrabold text-slate-900 tracking-tight leading-tight">Sistem Rekrutmen</h1>
+                        <p class="text-[11px] text-red-600 font-bold">Konfirmasi Jadwal Wawancara</p>
                     </div>
                 </a>
             </div>
 
             <!-- Global View Switcher -->
             <div class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
-                <a href="{{ url('/dashboard') }}" class="{{ request()->is('dashboard') || request()->is('/') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
+                <a href="{{ url('/dashboard') }}" class="{{ request()->is('dashboard') || request()->is('/') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3.5 py-1.5 rounded-lg transition">
                     Dashboard HR
                 </a>
-                <a href="{{ url('/portal/tok_demo_ahmad_fauzi') }}" class="{{ request()->is('portal*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
+                <a href="{{ url('/portal/tok_demo_ahmad_fauzi') }}" class="{{ request()->is('portal*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3.5 py-1.5 rounded-lg transition">
                     Portal Pelamar (Demo)
                 </a>
-                <a href="{{ url('/email-preview') }}" class="{{ request()->is('email-preview*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3 py-1.5 rounded-lg transition">
+                <a href="{{ url('/email-preview') }}" class="{{ request()->is('email-preview*') ? 'tab-nav-active' : 'tab-nav-inactive' }} px-3.5 py-1.5 rounded-lg transition">
                     Email Undangan
                 </a>
             </div>
@@ -98,8 +104,8 @@
             const toast = document.createElement('div');
             
             let bgClass = 'bg-slate-900 text-white';
-            if (type === 'success') bgClass = 'bg-emerald-600 text-white';
-            if (type === 'error') bgClass = 'bg-rose-600 text-white';
+            if (type === 'success') bgClass = 'bg-red-600 text-white shadow-red-500/20';
+            if (type === 'error') bgClass = 'bg-rose-700 text-white';
             if (type === 'warning') bgClass = 'bg-amber-600 text-white';
 
             toast.className = `${bgClass} px-4 py-2.5 rounded-xl shadow-lg text-xs font-bold transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto flex items-center justify-between gap-3`;
