@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desain Tampilan Sistem Konfirmasi Wawancara</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+    .tab-active {
+      background-color: #4F46E5;
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+    }
+    .tab-inactive {
+      color: #64748B;
+      background-color: transparent;
+    }
+    .tab-inactive:hover {
+      background-color: #F1F5F9;
+      color: #0F172A;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+
+  <!-- Top Navigation & View Switcher Bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 px-4 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h1 class="text-base font-extrabold text-slate-900 tracking-tight">RecruitFlow</h1>
+        <p class="text-xs text-slate-400">Konfirmasi Jadwal Wawancara</p>
+      </div>
+
+      <!-- Mode Switcher Tabs (No redundant icons, concise 1-2 words) -->
+      <div class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs font-semibold">
+        <button onclick="switchView('hr-dashboard')" id="btn-hr-dashboard" class="tab-active px-3 py-1.5 rounded-lg transition">
+          Dashboard
+        </button>
+        <button onclick="switchView('candidate-portal')" id="btn-candidate-portal" class="tab-inactive px-3 py-1.5 rounded-lg transition">
+          Respon Pelamar
+        </button>
+        <button onclick="switchView('email-preview')" id="btn-email-preview" class="tab-inactive px-3 py-1.5 rounded-lg transition">
+          Email Undangan
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- VIEW 1: DASHBOARD HR -->
+  <!-- ========================================== -->
+  <main id="view-hr-dashboard" class="max-w-7xl mx-auto px-4 lg:px-8 py-6 space-y-5">
+    
+    <!-- Action Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Jadwal Wawancara</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Sinkronisasi Google Form aktif.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200">
+          Tersinkron
+        </span>
+        <button onclick="openScheduleModal('Budi Santoso', 'Frontend Developer')" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition">
+          Jadwalkan
+        </button>
+      </div>
+    </div>
+
+    <!-- 5 Clean Metric Cards (Prioritize Data & Whitespace, No Redundant Icons) -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+      <!-- Total Lamaran -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-xs font-semibold text-slate-400 block">Total Pelamar</span>
+        <span class="text-2xl font-black text-slate-900 mt-1 block">48</span>
+      </div>
+
+      <!-- Belum Dijadwalkan -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-xs font-semibold text-slate-400 block">Perlu Jadwal</span>
+        <span class="text-2xl font-black text-blue-600 mt-1 block">12</span>
+      </div>
+
+      <!-- Menunggu Konfirmasi -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-xs font-semibold text-slate-400 block">Menunggu Respon</span>
+        <span class="text-2xl font-black text-purple-600 mt-1 block">15</span>
+      </div>
+
+      <!-- Reschedule Diminta -->
+      <div class="bg-white p-4 rounded-xl border border-amber-300 bg-amber-50/30 shadow-xs">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-amber-900">Reschedule</span>
+          <span class="text-[10px] font-bold bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded">Perlu Aksi</span>
+        </div>
+        <span class="text-2xl font-black text-amber-700 mt-1 block">3</span>
+      </div>
+
+      <!-- Terkonfirmasi -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+        <span class="text-xs font-semibold text-slate-400 block">Terkonfirmasi</span>
+        <span class="text-2xl font-black text-emerald-600 mt-1 block">18</span>
+      </div>
+    </div>
+
+    <!-- Main Table Container -->
+    <div class="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <!-- Filter Toolbar -->
+      <div class="p-3 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 overflow-x-auto text-xs font-semibold">
+          <button onclick="filterTable('all')" id="filter-all" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white">Semua (48)</button>
+          <button onclick="filterTable('reschedule')" id="filter-reschedule" class="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-300">Reschedule (3)</button>
+          <button onclick="filterTable('invited')" id="filter-invited" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600">Menunggu (15)</button>
+          <button onclick="filterTable('confirmed')" id="filter-confirmed" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600">Terkonfirmasi (18)</button>
+          <button onclick="filterTable('new')" id="filter-new" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600">Perlu Jadwal (12)</button>
+        </div>
+
+        <input type="text" placeholder="Cari pelamar..." class="w-full sm:w-60 px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+
+      <!-- Candidate Data Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-600">
+          <thead class="bg-slate-50 border-b border-slate-200 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="py-3 px-4">Kandidat</th>
+              <th class="py-3 px-4">Posisi</th>
+              <th class="py-3 px-4">Jadwal</th>
+              <th class="py-3 px-4">Pewawancara</th>
+              <th class="py-3 px-4">Status</th>
+              <th class="py-3 px-4 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100" id="candidate-rows">
+            
+            <!-- Row 1: Reschedule Requested -->
+            <tr class="bg-amber-50/20" data-status="reschedule">
+              <td class="py-3 px-4">
+                <span class="font-bold text-slate-900 block text-xs">Siti Rahma</span>
+                <span class="text-slate-400 text-[11px]">siti.rahma@gmail.com</span>
+              </td>
+              <td class="py-3 px-4 font-medium text-slate-800">UI/UX Designer</td>
+              <td class="py-3 px-4">
+                <span class="text-slate-400 line-through block">Selasa, 24 Nov 2026, 10:00</span>
+                <span class="text-[11px] text-amber-700 font-semibold">Minta: Kamis 14:00</span>
+              </td>
+              <td class="py-3 px-4 text-slate-800">Dimas Ardiansyah</td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                  Reschedule (1x)
+                </span>
+              </td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="openRescheduleModal('Siti Rahma', 'UI/UX Designer', 'Ada sidang tugas akhir kampus di hari Selasa. Mohon reschedule ke Kamis jam 14:00.')" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs">
+                  Review
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 2: Confirmed -->
+            <tr data-status="confirmed">
+              <td class="py-3 px-4">
+                <span class="font-bold text-slate-900 block text-xs">Muhamad Ibnhu</span>
+                <span class="text-slate-400 text-[11px]">ibnhu@example.com</span>
+              </td>
+              <td class="py-3 px-4 font-medium text-slate-800">Frontend Engineer</td>
+              <td class="py-3 px-4 font-semibold text-slate-900">Kamis, 26 Nov 2026, 10:00</td>
+              <td class="py-3 px-4 text-slate-800">Rian Pratama</td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  Confirmed
+                </span>
+              </td>
+              <td class="py-3 px-4 text-right">
+                <button class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs">Detail</button>
+              </td>
+            </tr>
+
+            <!-- Row 3: Invited -->
+            <tr data-status="invited">
+              <td class="py-3 px-4">
+                <span class="font-bold text-slate-900 block text-xs">Ahmad Fauzi</span>
+                <span class="text-slate-400 text-[11px]">fauzi.ahmad@gmail.com</span>
+              </td>
+              <td class="py-3 px-4 font-medium text-slate-800">Backend Engineer</td>
+              <td class="py-3 px-4 text-slate-900">Jumat, 27 Nov 2026, 14:00</td>
+              <td class="py-3 px-4 text-slate-800">Rian Pratama</td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                  Invited
+                </span>
+              </td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="alert('Email reminder terkirim ke Ahmad Fauzi')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs">Kirim Ulang</button>
+              </td>
+            </tr>
+
+            <!-- Row 4: New Application -->
+            <tr data-status="new">
+              <td class="py-3 px-4">
+                <span class="font-bold text-slate-900 block text-xs">Dewi Lestari</span>
+                <span class="text-slate-400 text-[11px]">dewi.lestari@yahoo.com</span>
+              </td>
+              <td class="py-3 px-4 font-medium text-slate-800">Product Manager</td>
+              <td class="py-3 px-4 text-slate-400 italic">-</td>
+              <td class="py-3 px-4 text-slate-400 italic">-</td>
+              <td class="py-3 px-4">
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                  Baru
+                </span>
+              </td>
+              <td class="py-3 px-4 text-right">
+                <button onclick="openScheduleModal('Dewi Lestari', 'Product Manager')" class="px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg text-xs border border-indigo-200">
+                  Jadwalkan
+                </button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- VIEW 2: PORTAL RESPON KANDIDAT -->
+  <!-- ========================================== -->
+  <main id="view-candidate-portal" class="hidden max-w-md mx-auto px-4 py-8 space-y-4">
+    
+    <!-- Link Identifier -->
+    <div class="px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-[11px] text-slate-500 font-mono flex justify-between">
+      <span>recruitflow.id/portal/tok_89f3a1</span>
+      <span class="font-bold text-emerald-600">Aktif</span>
+    </div>
+
+    <!-- Card 1: Detail Undangan Utama -->
+    <div id="card-invitation-main" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
+      <div>
+        <span class="text-[11px] font-bold text-indigo-600 uppercase">TechNusantara</span>
+        <h3 class="text-lg font-bold text-slate-900 mt-0.5">Muhamad Ibnhu</h3>
+        <p class="text-xs text-slate-500">Frontend Engineer</p>
+      </div>
+
+      <!-- Schedule Data Grid (No icons, high legibility) -->
+      <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-2 text-xs">
+        <div class="flex justify-between">
+          <span class="text-slate-400">Jadwal:</span>
+          <span class="font-bold text-slate-900" id="portal-schedule-time">Kamis, 26 Nov 2026, 10:00 WIB</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Kategori:</span>
+          <span class="font-bold text-indigo-600" id="portal-category-text">Online</span>
+        </div>
+        <div class="flex justify-between" id="portal-venue-row">
+          <span class="text-slate-400" id="portal-venue-label">Media:</span>
+          <span class="font-medium text-slate-800" id="portal-venue-value">Google Meet (Link aktif setelah konfirmasi)</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Durasi:</span>
+          <span class="font-medium text-slate-800">45 Menit</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Pewawancara:</span>
+          <span class="font-medium text-slate-800">Rian Pratama (Tech Lead)</span>
+        </div>
+      </div>
+
+      <!-- Deadline Notice -->
+      <div class="p-2.5 rounded-lg bg-slate-100 text-[11px] text-slate-600 flex justify-between">
+        <span>Batas respon: <strong>25 Nov 2026, 10:00 WIB</strong></span>
+        <span class="text-slate-400">Maks. 1x reschedule</span>
+      </div>
+
+      <!-- CTA Buttons (1-2 words, no redundant icons) -->
+      <div class="space-y-2 pt-1">
+        <button onclick="confirmAttendance()" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition">
+          Konfirmasi Hadir
+        </button>
+        <button onclick="openRescheduleCard()" class="w-full py-2 px-4 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold rounded-xl text-xs transition">
+          Ajukan Reschedule
+        </button>
+        <button onclick="openDeclineCard()" class="w-full py-2 px-4 text-slate-400 hover:text-rose-600 font-semibold rounded-xl text-xs transition">
+          Tolak Undangan
+        </button>
+      </div>
+    </div>
+
+    <!-- Card 2: Permohonan Reschedule (Dedicated Card) -->
+    <div id="card-reschedule-form" class="hidden bg-white rounded-2xl border-2 border-amber-300 shadow-sm p-5 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-slate-900">Ajukan Reschedule</h3>
+        <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">Kuota: 1x</span>
+      </div>
+
+      <div class="text-xs text-slate-500">
+        Jadwal semula: <strong class="text-slate-800">Kamis, 26 Nov 2026, 10:00 WIB</strong>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Alasan Penundaan</label>
+          <textarea id="reschedule-reason-text" rows="3" placeholder="Tulis alasan penundaan..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500"></textarea>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Waktu Alternatif</label>
+          <input type="text" id="reschedule-slot-text" placeholder="Contoh: Jumat jam 14:00 WIB" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-amber-500">
+        </div>
+
+        <p class="text-[11px] text-slate-400">Jadwal baru ditentukan oleh tim HR.</p>
+
+        <div class="flex gap-2 pt-1">
+          <button onclick="backToInvitation()" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+            Batal
+          </button>
+          <button onclick="submitRescheduleRequest()" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl shadow-xs">
+            Kirim
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3: Verifikasi Dua Langkah Tolak Undangan (Dedicated Card) -->
+    <div id="card-decline-confirm" class="hidden bg-white rounded-2xl border-2 border-rose-300 shadow-sm p-5 space-y-4">
+      <div class="pb-2 border-b border-slate-100">
+        <h3 class="text-sm font-bold text-rose-700">Konfirmasi Penolakan</h3>
+        <p class="text-xs text-slate-500 mt-1">Yakin menolak undangan ini? Keputusan bersifat final.</p>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Alasan Penolakan</label>
+          <textarea id="decline-reason-text" rows="3" placeholder="Tulis alasan penolakan..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-1 focus:ring-rose-500"></textarea>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <button onclick="backToInvitation()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl">
+            Batal
+          </button>
+          <button onclick="submitDeclineRequest()" class="w-full py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 font-bold text-xs rounded-xl">
+            Tolak Undangan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4: Result Card -->
+    <div id="card-feedback-result" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-center space-y-3">
+      <div id="feedback-card-badge" class="inline-block px-3 py-1 rounded-full text-xs font-bold"></div>
+      <h3 id="feedback-card-title" class="text-base font-extrabold text-slate-900"></h3>
+      <p id="feedback-card-desc" class="text-xs text-slate-500 leading-relaxed"></p>
+      
+      <div id="feedback-card-extra" class="pt-1"></div>
+
+      <div class="border-t border-slate-100 pt-3">
+        <button onclick="resetSimulation()" class="text-xs text-slate-400 hover:text-indigo-600 font-semibold underline">
+          Simulasi Ulang
+        </button>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- VIEW 3: PREVIEW EMAIL UNDANGAN RESMI -->
+  <!-- ========================================== -->
+  <main id="view-email-preview" class="hidden max-w-2xl mx-auto px-4 py-8 space-y-3">
+    <!-- Email Client Header -->
+    <div class="bg-white border border-slate-200 rounded-xl p-4 text-xs space-y-1">
+      <div><strong class="text-slate-400">Subjek:</strong> <span class="font-bold text-slate-800">Undangan Wawancara: Frontend Engineer - Muhamad Ibnhu</span></div>
+      <div><strong class="text-slate-400">Dari:</strong> <span class="text-slate-600">HR TechNusantara &lt;recruitment@technusantara.id&gt;</span></div>
+    </div>
+
+    <!-- Email Body -->
+    <div class="bg-white border border-slate-200 rounded-xl p-6 text-xs text-slate-700 space-y-4">
+      <p>Halo <strong>Muhamad Ibnhu</strong>,</p>
+      <p>Kami mengundang Anda untuk sesi wawancara daring posisi <strong>Frontend Engineer</strong>:</p>
+
+      <table class="w-full bg-slate-50 border border-slate-200 rounded-lg text-xs my-2">
+        <tbody>
+          <tr class="border-b border-slate-200">
+            <td class="p-2.5 text-slate-400 w-1/3">Waktu</td>
+            <td class="p-2.5 font-bold text-slate-900">Kamis, 26 Nov 2026, 10:00 WIB</td>
+          </tr>
+          <tr class="border-b border-slate-200">
+            <td class="p-2.5 text-slate-400">Pewawancara</td>
+            <td class="p-2.5 font-bold text-slate-900">Rian Pratama (Tech Lead)</td>
+          </tr>
+          <tr>
+            <td class="p-2.5 text-slate-400">Media</td>
+            <td class="p-2.5 font-bold text-indigo-600">Google Meet</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="text-slate-500">Pilih respon kehadiran Anda paling lambat 24 jam sebelum jadwal:</p>
+
+      <!-- Email CTA Buttons -->
+      <div class="py-2 text-center space-y-2">
+        <a href="javascript:void(0)" onclick="switchView('candidate-portal'); backToInvitation(); confirmAttendance();" class="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl">
+          Konfirmasi Hadir
+        </a>
+        <div class="flex items-center justify-center gap-3 text-[11px]">
+          <a href="javascript:void(0)" onclick="switchView('candidate-portal'); openRescheduleCard();" class="text-amber-700 font-semibold underline">Ajukan Reschedule</a>
+          <span class="text-slate-300">•</span>
+          <a href="javascript:void(0)" onclick="switchView('candidate-portal'); openDeclineCard();" class="text-rose-600 font-semibold underline">Tolak Undangan</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: JADWALKAN WAWANCARA (HR ACTION) -->
+  <!-- ========================================== -->
+  <div id="modal-schedule" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full border border-slate-200 shadow-xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between">
+        <h3 class="font-bold text-slate-900 text-xs">Jadwal Wawancara</h3>
+        <button onclick="closeModal('modal-schedule')" class="text-slate-400 hover:text-slate-600 text-base font-bold">&times;</button>
+      </div>
+
+      <div class="p-5 space-y-3 text-xs">
+        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 flex justify-between items-center">
+          <span class="font-bold text-slate-900" id="modal-candidate-name">Budi Santoso</span>
+          <span class="text-slate-500" id="modal-candidate-role">Frontend Developer</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Tanggal</label>
+            <input type="date" value="2026-11-28" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Jam (WIB)</label>
+            <input type="time" value="10:00" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Pewawancara</label>
+            <select class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg">
+              <option>Rian Pratama</option>
+              <option>Dimas Ardiansyah</option>
+              <option>Nabila Putri</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Durasi</label>
+            <select class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg">
+              <option>45 Menit</option>
+              <option>60 Menit</option>
+              <option>30 Menit</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Kategori Wawancara (Online / Offline) -->
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Kategori</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="schedule-category" value="online" checked onchange="handleCategoryChange(this.value, 'sched')" class="text-indigo-600">
+              <span class="font-bold text-slate-800">Online</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-slate-50 cursor-pointer hover:bg-slate-100">
+              <input type="radio" name="schedule-category" value="offline" onchange="handleCategoryChange(this.value, 'sched')" class="text-indigo-600">
+              <span class="font-bold text-slate-800">Offline (Tatap Muka)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Input Dinamis Online: Link Meeting -->
+        <div id="sched-field-online">
+          <label class="block font-semibold text-slate-600 mb-1">Link Meeting</label>
+          <input type="text" id="sched-link-input" value="https://meet.google.com/xyz-interview" placeholder="https://meet.google.com/..." class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-[11px] text-indigo-600">
+        </div>
+
+        <!-- Input Dinamis Offline: Lokasi & Ruangan Kantor -->
+        <div id="sched-field-offline" class="hidden">
+          <label class="block font-semibold text-slate-600 mb-1">Lokasi & Ruangan Kantor</label>
+          <textarea id="sched-location-input" rows="2" placeholder="Contoh: Gedung Menara Cyber Lt. 5, Ruang Meeting Alpha, Jakarta Selatan" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"></textarea>
+        </div>
+      </div>
+
+      <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 text-xs font-bold">
+        <button onclick="closeModal('modal-schedule')" class="px-3 py-1.5 text-slate-500">Batal</button>
+        <button onclick="triggerScheduleSuccess()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
+          Kirim Undangan
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================== -->
+  <!-- MODAL: REVIEW RESCHEDULE (HR ACTION) -->
+  <!-- ========================================== -->
+  <div id="modal-reschedule" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full border border-amber-300 shadow-xl overflow-hidden">
+      <div class="px-5 py-3 bg-amber-500 text-white flex items-center justify-between">
+        <h3 class="font-bold text-xs">Tinjau Reschedule</h3>
+        <button onclick="closeModal('modal-reschedule')" class="text-white text-base font-bold">&times;</button>
+      </div>
+
+      <div class="p-5 space-y-3 text-xs">
+        <div class="flex justify-between items-center">
+          <span class="font-bold text-slate-900" id="reschedule-modal-candidate">Siti Rahma</span>
+          <span class="text-slate-500" id="reschedule-modal-position">UI/UX Designer</span>
+        </div>
+
+        <div class="p-3 rounded-lg bg-amber-50 border border-amber-200">
+          <span class="font-bold text-amber-900 text-[11px] block">Alasan Kandidat:</span>
+          <p class="text-slate-700 text-xs mt-0.5" id="reschedule-modal-reason">
+            "Ada sidang tugas akhir kampus di hari Selasa. Mohon reschedule ke Kamis jam 14:00."
+          </p>
+        </div>
+
+        <div class="space-y-1 pt-1">
+          <span class="font-bold text-slate-700 block">Jadwal Pengganti:</span>
+          <div class="grid grid-cols-2 gap-2">
+            <input type="date" value="2026-11-26" class="p-2 bg-slate-50 border border-slate-200 rounded-lg">
+            <input type="time" value="14:00" class="p-2 bg-slate-50 border border-slate-200 rounded-lg">
+          </div>
+        </div>
+
+        <!-- Kategori Pengganti (Online / Offline) -->
+        <div>
+          <label class="block font-semibold text-slate-600 mb-1">Kategori</label>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-slate-50 cursor-pointer">
+              <input type="radio" name="resched-category" value="online" checked onchange="handleCategoryChange(this.value, 'resched')" class="text-amber-600">
+              <span class="font-bold text-slate-800">Online</span>
+            </label>
+            <label class="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-slate-50 cursor-pointer">
+              <input type="radio" name="resched-category" value="offline" onchange="handleCategoryChange(this.value, 'resched')" class="text-amber-600">
+              <span class="font-bold text-slate-800">Offline</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="resched-field-online">
+          <label class="block font-semibold text-slate-600 mb-1">Link Meeting</label>
+          <input type="text" id="resched-link-input" value="https://meet.google.com/xyz-interview-new" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg font-mono text-[11px] text-indigo-600">
+        </div>
+
+        <div id="resched-field-offline" class="hidden">
+          <label class="block font-semibold text-slate-600 mb-1">Lokasi & Ruangan Kantor</label>
+          <textarea id="resched-location-input" rows="2" placeholder="Contoh: Gedung Cyber 2 Lt. 12, Ruang Alpha" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs"></textarea>
+        </div>
+      </div>
+
+      <div class="px-5 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2 text-xs font-bold">
+        <button onclick="closeModal('modal-reschedule')" class="px-3 py-1.5 text-slate-500">Batal</button>
+        <button onclick="triggerRescheduleApproval()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg">
+          Setujui & Kirim
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Toast Notification -->
+  <div id="toast-notify" class="fixed bottom-4 right-4 z-50 transform translate-y-20 opacity-0 transition-all duration-200 bg-slate-900 text-white px-3.5 py-2.5 rounded-xl shadow-lg text-xs font-medium">
+    <span id="toast-text">Notifikasi</span>
+  </div>
+
+  <script>
+    function switchView(viewId) {
+      ['hr-dashboard', 'candidate-portal', 'email-preview'].forEach(v => {
+        document.getElementById(`view-${v}`).classList.add('hidden');
+        const btn = document.getElementById(`btn-${v}`);
+        btn.classList.remove('tab-active');
+        btn.classList.add('tab-inactive');
+      });
+      document.getElementById(`view-${viewId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`btn-${viewId}`);
+      activeBtn.classList.add('tab-active');
+      activeBtn.classList.remove('tab-inactive');
+    }
+
+    function filterTable(status) {
+      const rows = document.querySelectorAll('#candidate-rows tr');
+      rows.forEach(row => {
+        if (status === 'all') {
+          row.style.display = '';
+        } else {
+          const rowStatus = row.getAttribute('data-status');
+          row.style.display = rowStatus === status ? '' : 'none';
+        }
+      });
+
+      ['all', 'reschedule', 'invited', 'confirmed', 'new'].forEach(b => {
+        const btn = document.getElementById(`filter-${b}`);
+        if (b === status) {
+          btn.className = 'px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-semibold';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-semibold';
+        }
+      });
+    }
+
+    function openScheduleModal(name, role) {
+      document.getElementById('modal-candidate-name').textContent = name;
+      document.getElementById('modal-candidate-role').textContent = role;
+      document.getElementById('modal-schedule').classList.remove('hidden');
+    }
+
+    function openRescheduleModal(name, role, reason) {
+      document.getElementById('reschedule-modal-candidate').textContent = name;
+      document.getElementById('reschedule-modal-position').textContent = role;
+      document.getElementById('reschedule-modal-reason').textContent = `"${reason}"`;
+      document.getElementById('modal-reschedule').classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    // Candidate Navigation Cards
+    function showCandidateCard(cardId) {
+      ['card-invitation-main', 'card-reschedule-form', 'card-decline-confirm', 'card-feedback-result'].forEach(c => {
+        const el = document.getElementById(c);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(cardId);
+      if (target) target.classList.remove('hidden');
+    }
+
+    function openRescheduleCard() {
+      showCandidateCard('card-reschedule-form');
+    }
+
+    function openDeclineCard() {
+      showCandidateCard('card-decline-confirm');
+    }
+
+    function backToInvitation() {
+      showCandidateCard('card-invitation-main');
+    }
+
+    function confirmAttendance() {
+      showCandidateCard('card-feedback-result');
+      
+      const badge = document.getElementById('feedback-card-badge');
+      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+      badge.textContent = 'Confirmed';
+
+      document.getElementById('feedback-card-title').textContent = 'Kehadiran Dikonfirmasi';
+      document.getElementById('feedback-card-desc').textContent = 'Jadwal: Kamis, 26 Nov 2026, 10:00 WIB via Google Meet. Undangan kalender telah dikirim ke email.';
+      
+      document.getElementById('feedback-card-extra').innerHTML = `
+        <span class="text-xs text-indigo-600 font-semibold">Tautan Meet siap di email</span>
+      `;
+
+      showToast('Status: CONFIRMED');
+    }
+
+    function submitRescheduleRequest() {
+      const reason = document.getElementById('reschedule-reason-text').value;
+      if (!reason || reason.trim().length < 5) {
+        alert('Mohon cantumkan alasan penundaan.');
+        return;
+      }
+
+      showCandidateCard('card-feedback-result');
+
+      const badge = document.getElementById('feedback-card-badge');
+      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+      badge.textContent = 'Reschedule Requested';
+
+      document.getElementById('feedback-card-title').textContent = 'Permohonan Terkirim';
+      document.getElementById('feedback-card-desc').textContent = `Alasan: "${reason.trim()}". Tim HR akan segera meninjau dan mengirimkan jadwal baru.`;
+      document.getElementById('feedback-card-extra').innerHTML = '';
+
+      showToast('Permohonan dikirim ke HR');
+    }
+
+    function submitDeclineRequest() {
+      const reason = document.getElementById('decline-reason-text').value;
+      if (!reason || reason.trim().length < 5) {
+        alert('Mohon cantumkan alasan penolakan.');
+        return;
+      }
+
+      showCandidateCard('card-feedback-result');
+
+      const badge = document.getElementById('feedback-card-badge');
+      badge.className = 'inline-block px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700';
+      badge.textContent = 'Declined';
+
+      document.getElementById('feedback-card-title').textContent = 'Undangan Ditolak';
+      document.getElementById('feedback-card-desc').textContent = `Alasan tercatat: "${reason.trim()}". Proses rekrutmen selesai.`;
+      document.getElementById('feedback-card-extra').innerHTML = '';
+
+      showToast('Status: DECLINED');
+    }
+
+    function resetSimulation() {
+      document.getElementById('reschedule-reason-text').value = '';
+      document.getElementById('reschedule-slot-text').value = '';
+      document.getElementById('decline-reason-text').value = '';
+      showCandidateCard('card-invitation-main');
+      showToast('Simulasi direset');
+    }
+
+    // Toggle Kategori Online / Offline
+    function handleCategoryChange(cat, prefix) {
+      const onlineEl = document.getElementById(`${prefix}-field-online`);
+      const offlineEl = document.getElementById(`${prefix}-field-offline`);
+      if (cat === 'online') {
+        onlineEl.classList.remove('hidden');
+        offlineEl.classList.add('hidden');
+      } else {
+        onlineEl.classList.add('hidden');
+        offlineEl.classList.remove('hidden');
+      }
+    }
+
+    function triggerScheduleSuccess() {
+      const isOnline = document.querySelector('input[name="schedule-category"]:checked').value === 'online';
+      const link = document.getElementById('sched-link-input').value;
+      const location = document.getElementById('sched-location-input').value || 'Gedung Menara Cyber Lt. 5, Ruang Alpha';
+
+      // Update data di portal respon pelamar secara dinamis
+      const catText = document.getElementById('portal-category-text');
+      const venueLabel = document.getElementById('portal-venue-label');
+      const venueVal = document.getElementById('portal-venue-value');
+
+      if (isOnline) {
+        catText.textContent = 'Online';
+        catText.className = 'font-bold text-indigo-600';
+        venueLabel.textContent = 'Media:';
+        venueVal.textContent = 'Google Meet (' + (link || 'meet.google.com') + ')';
+      } else {
+        catText.textContent = 'Offline (Tatap Muka)';
+        catText.className = 'font-bold text-emerald-700';
+        venueLabel.textContent = 'Lokasi:';
+        venueVal.textContent = location;
+      }
+
+      closeModal('modal-schedule');
+      showToast(isOnline ? 'Undangan Online (Google Meet) dikirim' : 'Undangan Offline (Kantor) dikirim');
+    }
+
+    function triggerRescheduleApproval() {
+      const isOnline = document.querySelector('input[name="resched-category"]:checked').value === 'online';
+      const link = document.getElementById('resched-link-input').value;
+      const location = document.getElementById('resched-location-input').value || 'Gedung Cyber 2 Lt. 12, Ruang Alpha';
+
+      const catText = document.getElementById('portal-category-text');
+      const venueLabel = document.getElementById('portal-venue-label');
+      const venueVal = document.getElementById('portal-venue-value');
+
+      if (isOnline) {
+        catText.textContent = 'Online';
+        catText.className = 'font-bold text-indigo-600';
+        venueLabel.textContent = 'Media:';
+        venueVal.textContent = 'Google Meet (' + (link || 'meet.google.com') + ')';
+      } else {
+        catText.textContent = 'Offline (Tatap Muka)';
+        catText.className = 'font-bold text-emerald-700';
+        venueLabel.textContent = 'Lokasi:';
+        venueVal.textContent = location;
+      }
+
+      closeModal('modal-reschedule');
+      showToast(isOnline ? 'Jadwal baru Online disetujui' : 'Jadwal baru Offline disetujui');
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast-notify');
+      document.getElementById('toast-text').textContent = text;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
