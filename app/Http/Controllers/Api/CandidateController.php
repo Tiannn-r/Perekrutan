@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
+use App\Models\Interview;
+use App\Models\StatusLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -14,6 +16,27 @@ class CandidateController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
+        // PRD FR-17 & BR-03: Undangan kedaluwarsa otomatis jika melewati batas waktu respon
+        Interview::where('status', 'Invited')
+            ->whereNotNull('batas_respon')
+            ->where('batas_respon', '<', now())
+            ->with(['candidate', 'token'])
+            ->get()
+            ->each(function ($inv) {
+                $inv->update(['status' => 'Expired']);
+                $inv->candidate?->update(['status' => 'Expired']);
+                $inv->token?->update(['sudah_dipakai' => true]);
+
+                StatusLog::create([
+                    'candidate_id' => $inv->candidate_id,
+                    'interview_id' => $inv->id,
+                    'dari_status' => 'Invited',
+                    'ke_status' => 'Expired',
+                    'aktor' => 'Sistem',
+                    'keterangan' => 'Undangan kedaluwarsa otomatis karena melewati batas waktu respon (Aturan BR-03)',
+                ]);
+            });
+
         $query = Candidate::with([
             'latestInterview.token',
             'latestInterview.latestRescheduleRequest',

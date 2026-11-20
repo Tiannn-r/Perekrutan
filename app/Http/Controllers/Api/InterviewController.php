@@ -204,20 +204,29 @@ class InterviewController extends Controller
         $interview = Interview::with(['candidate', 'reminders'])->findOrFail($id);
 
         $prepReminder = $interview->reminders->firstWhere('jenis', 'persiapan');
-        $dayReminder = $interview->reminders->firstWhere('jenis', 'hari_h');
+        $dayReminder = $interview->reminders->firstWhere('jenis', 'hari_h') ?? $interview->reminders->first();
+
+        $activeReminder = $dayReminder ?? $prepReminder;
+        $isSent = $activeReminder && $activeReminder->status_kirim === 'terkirim';
 
         return response()->json([
             'success' => true,
             'interview_id' => $interview->id,
             'status' => $interview->status,
             'kategori' => $interview->kategori,
+            'reminder' => [
+                'status_kirim' => $isSent ? 'terkirim' : 'belum dikirim',
+                'dikirim_at' => $activeReminder?->dikirim_at ? $activeReminder->dikirim_at->translatedFormat('d M Y, H:i') . ' WIB' : null,
+                'subjek' => $activeReminder?->subjek,
+                'mode' => $activeReminder?->mode ?? $interview->kategori,
+            ],
             'reminders' => [
                 'persiapan' => $prepReminder ? [
                     'status_kirim' => $prepReminder->status_kirim,
                     'dikirim_at' => $prepReminder->dikirim_at ? $prepReminder->dikirim_at->translatedFormat('d M Y, H:i') . ' WIB' : null,
                     'subjek' => $prepReminder->subjek,
                 ] : [
-                    'status_kirim' => 'belum dikirim',
+                    'status_kirim' => $isSent ? 'terkirim' : 'belum dikirim',
                     'dikirim_at' => null,
                     'subjek' => null,
                 ],

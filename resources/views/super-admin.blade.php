@@ -127,22 +127,16 @@
                 <p class="text-xs text-slate-500 mt-0.5">Edit susunan draft email resmi yang dipakai otomatis oleh sistem dan tim HR.</p>
             </div>
 
-            <!-- Template Type Selector Pills -->
+            <!-- Template Type Selector Pills (PRD v1.1 FR-20 s/d FR-23) -->
             <div class="flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs overflow-x-auto">
-                <button type="button" id="tab-tmpl-invitation" onclick="selectAdminTemplate('invitation')" class="flex-1 min-w-[120px] py-1.5 px-3 rounded-lg bg-red-600 text-white font-bold transition">
-                    Undangan Awal
+                <button type="button" id="tab-tmpl-invitation" onclick="selectAdminTemplate('invitation')" class="flex-1 min-w-[140px] py-2 px-3 rounded-lg bg-red-600 text-white font-bold transition">
+                    1. Undangan Awal
                 </button>
-                <button type="button" id="tab-tmpl-reminder_online_prep" onclick="selectAdminTemplate('reminder_online_prep')" class="flex-1 min-w-[130px] py-1.5 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    Pengingat Online (Persiapan)
+                <button type="button" id="tab-tmpl-reminder_online" onclick="selectAdminTemplate('reminder_online')" class="flex-1 min-w-[170px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
+                    2. Pengingat Hari H Online
                 </button>
-                <button type="button" id="tab-tmpl-reminder_online_day" onclick="selectAdminTemplate('reminder_online_day')" class="flex-1 min-w-[120px] py-1.5 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    Pengingat Online (Hari H)
-                </button>
-                <button type="button" id="tab-tmpl-reminder_offline_prep" onclick="selectAdminTemplate('reminder_offline_prep')" class="flex-1 min-w-[130px] py-1.5 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    Pengingat Offline (Persiapan)
-                </button>
-                <button type="button" id="tab-tmpl-reminder_offline_day" onclick="selectAdminTemplate('reminder_offline_day')" class="flex-1 min-w-[120px] py-1.5 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
-                    Pengingat Offline (Hari H)
+                <button type="button" id="tab-tmpl-reminder_offline" onclick="selectAdminTemplate('reminder_offline')" class="flex-1 min-w-[170px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
+                    3. Pengingat Hari H Offline
                 </button>
             </div>
 
@@ -427,13 +421,13 @@
     function selectAdminTemplate(key) {
         activeTemplateKey = key;
 
-        ['invitation', 'reminder_online_prep', 'reminder_online_day', 'reminder_offline_prep', 'reminder_offline_day'].forEach(k => {
+        ['invitation', 'reminder_online', 'reminder_offline'].forEach(k => {
             const btn = document.getElementById(`tab-tmpl-${k}`);
             if (btn) {
                 if (k === key) {
-                    btn.className = 'flex-1 min-w-[120px] py-1.5 px-3 rounded-lg bg-red-600 text-white font-bold transition';
+                    btn.className = 'flex-1 min-w-[140px] py-2 px-3 rounded-lg bg-red-600 text-white font-bold transition';
                 } else {
-                    btn.className = 'flex-1 min-w-[120px] py-1.5 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition';
+                    btn.className = 'flex-1 min-w-[140px] py-2 px-3 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition';
                 }
             }
         });

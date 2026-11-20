@@ -407,4 +407,64 @@ class RecruitmentBackendTest extends TestCase
              ->assertJson(['success' => true])
              ->assertJsonStructure(['status_logs', 'notification_logs']);
     }
+
+    public function test_prd_v11_single_day_of_reminder_and_auto_expiration(): void
+    {
+        // 1. Test auto-expiration when deadline passes (FR-17 & BR-03)
+        $candExpired = Candidate::create([
+            'nama' => 'Calon Expired',
+            'email' => 'expired@example.com',
+            'telepon' => '0899123456',
+            'posisi' => 'QA Engineer',
+            'status' => 'Invited',
+        ]);
+
+        $intExpired = Interview::create([
+            'candidate_id' => $candExpired->id,
+            'kategori' => 'online',
+            'tanggal_waktu' => now()->addDays(2),
+            'interviewer' => 'Dimas Ardiansyah',
+            'link_meeting' => 'https://meet.google.com/exp-room',
+            'status' => 'Invited',
+            'batas_respon' => now()->subHours(2), // Already passed deadline
+        ]);
+
+        // Calling candidates index triggers auto-expiration
+        $res = $this->getJson('/api/candidates');
+        $res->assertStatus(200);
+
+        $this->assertEquals('Expired', $candExpired->fresh()->status);
+        $this->assertEquals('Expired', $intExpired->fresh()->status);
+
+        // 2. Test single Day-of reminder per mode (PRD v1.1 FR-19 s/d FR-24)
+        $candOffline = Candidate::create([
+            'nama' => 'Kandidat Offline Hari H',
+            'email' => 'offline.day@example.com',
+            'telepon' => '0899778899',
+            'posisi' => 'Site Manager',
+            'status' => 'Confirmed',
+        ]);
+
+        $intOffline = Interview::create([
+            'candidate_id' => $candOffline->id,
+            'kategori' => 'offline',
+            'tanggal_waktu' => now()->addHours(3),
+            'interviewer' => 'Tim HR NKRI',
+            'lokasi' => 'Gedung Menara Rekatama Lt. 8',
+            'status' => 'Confirmed',
+        ]);
+
+        // Send Day-of reminder for Offline interview
+        $resReminder = $this->postJson("/api/interviews/{$intOffline->id}/reminder", [
+            'channel' => 'email',
+        ]);
+        $resReminder->assertStatus(200)
+                    ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('reminders', [
+            'interview_id' => $intOffline->id,
+            'mode' => 'offline',
+            'status_kirim' => 'terkirim',
+        ]);
+    }
 }

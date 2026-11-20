@@ -36,6 +36,11 @@ class ResponseToken extends Model
             return false;
         }
 
+        // PRD BR-04: Tautan respon hanya berlaku sampai jadwal wawancara berlangsung
+        if ($this->interview && $this->interview->tanggal_waktu && now()->isAfter($this->interview->tanggal_waktu)) {
+            return false;
+        }
+
         return true;
     }
 }
